@@ -2,23 +2,25 @@
 import { useSession } from "next-auth/react";
 import {
   ensurePermissions,
-  type PermissionsMap,
-  can as canHelper,
   type PermissionModule,
   type PermissionAction,
-} from "../utils/permissions"; // 👈 relativo (sem "@")
+} from "../utils/permissions";
 import { useMemo } from "react";
+
+type PermissionsMap = Record<PermissionModule, PermissionAction[]>;
 
 export function useAcl() {
   const { data } = useSession();
   const raw = (data?.user as any)?.permissoes;
+
   const permissoes: PermissionsMap = useMemo(
-    () => ensurePermissions(raw),
+    () => ensurePermissions(raw) as unknown as PermissionsMap,
     [raw]
   );
 
+  // 👉 Função can feita aqui
   function can(mod: PermissionModule, act: PermissionAction) {
-    return canHelper(permissoes, mod, act);
+    return permissoes[mod]?.includes(act) ?? false;
   }
 
   return { permissoes, can };
