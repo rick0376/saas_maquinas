@@ -1,0 +1,260 @@
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  color: #ebedf0;
+}
+.headActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Botões */
+.primaryBtn,
+.ghostBtn,
+.ghostWBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+}
+.primaryBtn {
+  border: 1px solid rgba(5, 34, 99, 0.35);
+  background: #3973f0;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
+}
+.primaryBtn:hover {
+  background: #1341c2;
+  border: 1px solid #a3b8f0;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.35);
+}
+.ghostBtn {
+  border: 1px solid #946005;
+  background: #f59e0b;
+  color: #0f172a;
+}
+.ghostBtn:hover {
+  background: #d97706;
+  border: 1px solid #e0b76f;
+  color: #f2f3f5;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.08);
+}
+
+.ghostWBtn {
+  border: 1px solid #034d1e;
+  background: #25d366;
+  color: #0f172a;
+}
+.ghostWBtn:hover {
+  background: #128c7e;
+  border: 1px solid #9de7df;
+  color: #f2f3f5;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.08);
+}
+
+/* Filtros */
+.filters {
+  padding: 0.8rem;
+}
+.filterRow {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: auto 1fr 1fr auto 1fr 1fr auto 1fr auto;
+  align-items: end;
+}
+.label {
+  color: #0f172a;
+  font-weight: 700;
+}
+.input,
+.filterRow select {
+  padding: 0.5rem 0.6rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #0f172a;
+  outline: none;
+}
+.input:focus,
+.filterRow select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+/* Tabela */
+.tableWrap {
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.65rem 0.55rem;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+.table th {
+  color: #334155;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.empty {
+  text-align: center;
+  color: #475569;
+  padding: 0.8rem;
+}
+.trunc {
+  max-width: 360px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.num {
+  text-align: right;
+}
+.dim {
+  color: #b6bdc7;
+}
+.rowSel {
+  background: #f8fafc;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.45);
+  z-index: 999;
+}
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+.modalCard {
+  width: min(1100px, 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+  padding: 1rem;
+}
+.modalTitle {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+.modalText {
+  margin: 0 0 0.6rem;
+  color: #334155;
+}
+
+.modalGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 420px 1fr;
+}
+
+/* Coluna contatos */
+.contactColumn {
+  display: grid;
+  gap: 0.6rem;
+}
+.contactHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dimSmall {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+.contactScroll {
+  max-height: 48vh;
+  overflow: auto;
+  display: grid;
+  gap: 0.45rem;
+  padding-right: 0.2rem;
+}
+.contactItem {
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.45rem 0.6rem;
+  background: #fff;
+}
+.cName {
+  color: #0f172a;
+  font-weight: 700;
+}
+.cPhone {
+  color: #475569;
+}
+
+.customBox {
+  display: grid;
+  gap: 0.35rem;
+}
+.textarea {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  color: #0f172a;
+  resize: vertical;
+}
+.textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+.hint {
+  color: #64748b;
+}
+
+/* Coluna mensagem */
+.messageColumn {
+  display: grid;
+  gap: 0.35rem;
+}
+
+/* Ações da modal */
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+
+/* Responsivo */
+@media (max-width: 980px) {
+  .filterRow {
+    grid-template-columns: 1fr;
+  }
+  .modalGrid {
+    grid-template-columns: 1fr;
+  }
+}

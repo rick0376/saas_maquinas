@@ -1,0 +1,207 @@
+/* ===== Layout unificado (público + app) ===== */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    #37474f 0%,
+    #546e7a 30%,
+    #78909c 60%,
+    #cfd8dc 100%
+  );
+}
+
+/* HEADER */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #11074b;
+  //background: linear-gradient(135deg, #1f2937, #374151);
+  border-bottom: 3px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+.headerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  height: 70px;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.logoArea {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  text-decoration: none;
+  color: inherit;
+}
+.logoContainer {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  //background: linear-gradient(135deg, #00695c, #379197);
+  //box-shadow: 0 4px 15px rgba(55, 145, 151, 0.3);
+}
+.logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+}
+.title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.subtitle {
+  font-size: 0.7rem;
+  color: #cbd5e1;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* MAIN e FOOTER */
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem;
+}
+.footer {
+  background-color: #11074b;
+  //background: linear-gradient(135deg, #1f2937, #374151);
+  border-bottom: 3px solid rgba(59, 130, 246, 0.3);
+  border-top: 3px solid rgba(59, 130, 246, 0.3);
+  height: 56px;
+  display: flex;
+  align-items: center;
+}
+.footerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #eeeff1;
+  font-weight: 700;
+}
+.footerMuted {
+  color: #cbd5e1;
+  font-weight: 600;
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  background: #cbd5e1;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 0.75rem;
+}
+
+/* ===== MODAL DE CONFIRMAÇÃO ===== */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 1500;
+}
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: min(440px, calc(100vw - 2rem));
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  padding: 1.25rem 1.25rem 1rem;
+  z-index: 1600;
+  display: grid;
+  gap: 0.75rem;
+  text-align: center;
+}
+.modalIcon {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 0.25rem;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: #ef4444;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+}
+.modalTitle {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+.modalText {
+  margin: 0;
+  color: #475569;
+  font-weight: 600;
+}
+.modalActions {
+  margin-top: 0.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+.ghostBtn,
+.dangerBtn {
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.ghostBtn {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+.ghostBtn:hover {
+  background: #e2e8f0;
+}
+.dangerBtn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.35);
+}
+.dangerBtn:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+/* Responsivo */
+@media (max-width: 1024px) {
+  .headerContent {
+    padding: 0 1rem;
+  }
+  .main {
+    padding: 1rem;
+  }
+}

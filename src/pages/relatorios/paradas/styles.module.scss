@@ -1,0 +1,226 @@
+.wrap {
+  padding: 1rem;
+}
+
+/* Topo */
+.topbar {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #e2e5ec;
+}
+.subtitle {
+  margin: 0.2rem 0 0;
+  color: #b7bdc5;
+  font-weight: 600;
+}
+.actionsRight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Filtros */
+.filtersCard {
+  margin-bottom: 0.8rem;
+}
+.filters {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) auto;
+  align-items: end;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.grow {
+  grid-column: span 2;
+}
+.input {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  outline: none;
+  transition: border 0.15s ease, box-shadow 0.15s ease;
+}
+.input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+.primaryBtn,
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+}
+.primaryBtn {
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  background: linear-gradient(135deg, #1976d2 0%, #26a69a 100%);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
+}
+.primaryBtn:hover {
+  background: linear-gradient(135deg, #064686 0%, #055e55 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.35);
+}
+
+.ghostBtn {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #0f172a;
+}
+.ghostBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.08);
+  background: #e68181;
+  color: #fff;
+}
+
+@media (max-width: 1100px) {
+  .filters {
+    grid-template-columns: 1fr 1fr;
+  }
+  .grow {
+    grid-column: span 2;
+  }
+}
+
+/* KPIs */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+}
+.kpi {
+  border-radius: 14px;
+  padding: 0.8rem 0.9rem;
+  color: #0f172a;
+  box-shadow: 0 6px 22px rgba(2, 6, 23, 0.06);
+  border: 1px solid transparent;
+}
+.kpiLabel {
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(15, 23, 42, 0.75);
+  font-weight: 800;
+}
+.kpiValue {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 900;
+  margin-top: 0.25rem;
+}
+.kpiHint {
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+/* cores dos cards */
+.kpiBlue {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-color: #bfdbfe;
+}
+.kpiGreen {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border-color: #a7f3d0;
+}
+.kpiAmber {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border-color: #fde68a;
+}
+.kpiRose {
+  background: linear-gradient(135deg, #fff1f2, #ffe4e6);
+  border-color: #fecdd3;
+}
+
+@media (max-width: 1100px) {
+  .kpis {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .kpis {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tabela */
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.7rem 0.6rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.table th {
+  color: #475569;
+  font-weight: 800;
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.trunc {
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.dim {
+  color: #64748b;
+  font-weight: 600;
+}
+.loading,
+.empty {
+  padding: 0.9rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+/* Badges */
+.badge {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  border: 1px solid transparent;
+}
+.badgeOp {
+  color: #064e3b;
+  background: #bbf7d0;
+  border-color: #86efac;
+}
+.badgeNop {
+  color: #7f1d1d;
+  background: #fecaca;
+  border-color: #fca5a5;
+}

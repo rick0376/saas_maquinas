@@ -1,0 +1,281 @@
+/* ========== Topo / Título ========== */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.title {
+  margin: 0;
+  color: #e2e8f0;
+  font-weight: 800;
+}
+
+/* ========== Toast ========== */
+.toast {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  border-radius: 12px;
+  padding: 0.6rem 0.8rem;
+  font-weight: 700;
+  box-shadow: 0 10px 26px rgba(16, 185, 129, 0.25);
+}
+
+/* ========== Form (card branco) ========== */
+.form {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.06);
+}
+.row {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 900px) {
+  .row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.col {
+  display: grid;
+  gap: 0.35rem;
+}
+.label {
+  color: #334155; /* slate-700 */
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.input {
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #0f172a;
+  outline: none;
+  transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.input::placeholder {
+  color: #94a3b8;
+}
+.input:disabled {
+  background: #f8fafc;
+  color: #64748b;
+}
+.input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+/* ========== Ações do form ========== */
+.actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+.primaryBtn,
+.ghostBtn,
+.dangerBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.62rem 0.9rem;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.primaryBtn {
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  background: linear-gradient(135deg, #1976d2 0%, #26a69a 100%);
+  color: #fff;
+  box-shadow: 0 10px 26px rgba(59, 130, 246, 0.28);
+}
+.primaryBtn:hover {
+  background: linear-gradient(135deg, #064686 0%, #055e55 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(59, 130, 246, 0.38);
+}
+.ghostBtn {
+  border: 1px solid #e2e8f0;
+  background: #e9a3a3;
+  color: #0f172a;
+}
+.ghostBtn:hover {
+  background: #6d3434;
+  color: #e9eaec;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.08);
+}
+.dangerBtn {
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: #fff;
+  box-shadow: 0 10px 26px rgba(239, 68, 68, 0.28);
+}
+.dangerBtn:hover {
+  background: linear-gradient(135deg, #f07d7d, #b14040);
+  color: #0f172a;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(239, 68, 68, 0.38);
+}
+
+/* ========== Tabela (card branco) ========== */
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.06);
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.75rem 0.7rem;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: middle;
+}
+.table th {
+  color: #475569; /* slate-600 */
+  font-weight: 800;
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.table tbody tr:hover {
+  background: #f8fafc;
+}
+.empty {
+  text-align: center;
+  color: #64748b;
+  padding: 0.9rem;
+  font-weight: 600;
+}
+
+/* ========== Badges de perfil (alto contraste) ========== */
+.roleBadge {
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  border: 1px solid transparent;
+  display: inline-block;
+}
+.roleUser {
+  color: #166534;
+  background: #bbf7d0;
+  border-color: #86efac;
+}
+.roleAdmin {
+  color: #92400e;
+  background: #fde68a;
+  border-color: #fcd34d;
+}
+.roleSuper {
+  color: #991b1b;
+  background: #fecaca;
+  border-color: #fca5a5;
+}
+
+/* ========== Ações na tabela (botões compactos) ========== */
+.rowActions {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+.smallBtn,
+.smallDanger {
+  padding: 0.38rem 0.6rem;
+  border-radius: 9px;
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.smallBtn {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #0f172a;
+}
+.smallBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.08);
+}
+.smallDanger {
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: #ffffff;
+}
+.smallDanger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(239, 68, 68, 0.35);
+}
+
+/* ========== Modal (claro, sobre fundo app) ========== */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.45);
+  z-index: 999;
+  backdrop-filter: blur(2px);
+}
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+.modalCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(2, 6, 23, 0.35);
+  padding: 1rem 1.1rem;
+  max-width: 520px;
+  width: min(520px, 100%);
+}
+.modalTitle {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+.modalText {
+  margin: 0;
+  color: #334155;
+  line-height: 1.55;
+}
+.modalActions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  margin-top: 0.9rem;
+}
+.titleWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.tenantPill {
+  color: #cbd5e1;
+  font-weight: 600;
+  margin-left: 0.25rem;
+}

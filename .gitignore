@@ -1,0 +1,32 @@
+# --- Node / package managers ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Next.js / build ---
+.next/
+.next/cache/
+out/
+dist/
+coverage/
+*.tsbuildinfo
+
+# --- Ambiente (.env) ---
+.env
+.env.*
+!.env.example  # mantenha um exemplo versionado
+
+# --- Sistemas / IDEs ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# --- Vercel / outras ---
+.vercel/
+*.log
+tmp/
+
+cores_btn.scss

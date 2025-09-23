@@ -1,0 +1,523 @@
+/* =========================
+   Layout geral / Topbar
+   ========================= */
+.page {
+  padding: 1rem;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.iconWrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.titleWrap h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #eff6ff;
+}
+.subtitle {
+  display: block;
+  margin-top: 0.15rem;
+  color: #bac4d3;
+  font-size: 0.9rem;
+}
+
+.readonlyBadge {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.35rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.5rem;
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.tenantBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.5rem;
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* bloqueio */
+.block {
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+.dimSmall {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+/* =========================
+   Toast
+   ========================= */
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid transparent;
+}
+.toastOk {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+.toastErr {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+.toastClose {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-left: auto;
+  color: inherit;
+}
+
+/* =========================
+   Grid principal
+   ========================= */
+.grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1rem;
+}
+
+/* =========================
+   Coluna: Usuários
+   ========================= */
+.usersCard {
+  padding: 0.75rem;
+}
+
+.cardHead {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+.searchBox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.55rem;
+}
+.searchInput {
+  border: none;
+  outline: none;
+  min-width: 160px;
+}
+
+.usersList {
+  display: grid;
+  gap: 0.5rem;
+}
+.centerMuted {
+  text-align: center;
+  color: #64748b;
+  padding: 0.75rem;
+}
+
+.userItem {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.55rem;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, transform 0.08s ease;
+}
+.userItem:hover {
+  background: #f8fafc;
+}
+.active {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}
+
+.avatar,
+.avatarLg {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.avatarLg {
+  width: 36px;
+  height: 36px;
+}
+
+.userText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.dim {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+.role {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.5rem;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.tagAdmin {
+  background: #e0f2fe;
+  color: #075985;
+}
+.tagSuper {
+  background: #dcfce7;
+  color: #166534;
+}
+.tagUser {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* =========================
+   Coluna: Módulos (cards coloridos)
+   ========================= */
+.modulesPanel {
+  padding: 0.75rem;
+}
+
+.centerMutedBig {
+  color: #64748b;
+  text-align: center;
+  padding: 2rem 1rem;
+  display: grid;
+  gap: 0.35rem;
+  place-items: center;
+}
+
+.selHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.selUserWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.saveBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 38px;
+  padding: 0 0.9rem;
+  border: none;
+  border-radius: 0.55rem;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.saveBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.28);
+}
+.saveBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* grupos */
+.groupsWrap {
+  display: grid;
+  gap: 1rem;
+}
+.groupBlock {
+  display: grid;
+  gap: 0.6rem;
+}
+.groupTitle {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #334155;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* grid dos cards de módulo */
+.moduleGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+@media (max-width: 1440px) {
+  .moduleGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 980px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .moduleGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .moduleGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ====== CARD DE MÓDULO (tema por data-mod) ====== */
+.moduleCard {
+  /* tema base (é sobrescrito pelos data-mod abaixo) */
+  --mod-bg: #ffffff;
+  --mod-border: #e5e7eb;
+  --mod-accent: #2563eb;
+  --mod-accent-weak: rgba(37, 99, 235, 0.1);
+  --mod-grad-a: #ffffff;
+  --mod-grad-b: #f8fafc;
+
+  border: 1px solid var(--mod-border);
+  border-radius: 0.8rem;
+  background: linear-gradient(180deg, var(--mod-grad-a), var(--mod-grad-b));
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02), 0 6px 16px rgba(15, 23, 42, 0.04);
+}
+
+.moduleCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    1000px 200px at -20% -40%,
+    var(--mod-accent-weak),
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+.moduleHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 0.9rem 0.6rem 0.9rem;
+  border-bottom: 1px dashed var(--mod-border);
+}
+.moduleTitle {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.toggleAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: #475569;
+  cursor: pointer;
+  user-select: none;
+}
+.toggleAll input {
+  accent-color: var(--mod-accent);
+}
+
+/* chips de ação */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.7rem 0.9rem 0.95rem 0.9rem;
+}
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+.chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+.chip span {
+  display: inline-block;
+  padding: 0.42rem 0.65rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #e5e7eb;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+    transform 0.06s ease;
+}
+.chip:hover span {
+  transform: translateY(-1px);
+}
+.chip input:checked + span {
+  background: var(--mod-accent);
+  color: #fff;
+  border-color: var(--mod-accent);
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--mod-accent) 30%, transparent);
+}
+
+/* =========================
+   TEMAS por módulo (data-mod)
+   ========================= */
+
+/* Visão Geral */
+.moduleCard[data-mod="dashboard"] {
+  --mod-border: #c7d2fe;
+  --mod-accent: #4f46e5;
+  --mod-accent-weak: rgba(79, 70, 229, 0.12);
+  --mod-grad-a: #ffffff;
+  --mod-grad-b: #f5f7ff;
+}
+.moduleCard[data-mod="painel/maquinas"] {
+  --mod-border: #99f6e4;
+  --mod-accent: #0ea5e9;
+  --mod-accent-weak: rgba(14, 165, 233, 0.12);
+  --mod-grad-a: #ffffff;
+  --mod-grad-b: #f0fbff;
+}
+
+/* Operação & Paradas */
+.moduleCard[data-mod="operacao"] {
+  --mod-border: #fbcfe8;
+  --mod-accent: #db2777;
+  --mod-accent-weak: rgba(219, 39, 119, 0.12);
+  --mod-grad-a: #ffffff;
+  --mod-grad-b: #fff5fb;
+}
+.moduleCard[data-mod="paradas"] {
+  --mod-border: #fde68a;
+  --mod-accent: #d97706;
+  --mod-accent-weak: rgba(217, 119, 6, 0.12);
+  --mod-grad-a: #ffffff;
+  --mod-grad-b: #fff9ec;
+}
+
+/* Cadastros */
+.moduleCard[data-mod="maquinas"] {
+  --mod-border: #bbf7d0;
+  --mod-accent: #16a34a;
+  --mod-accent-weak: rgba(22, 163, 74, 0.12);
+  --mod-grad-a: #ffffff;
+  --mod-grad-b: #f6fff7;
+}
+.moduleCard[data-mod="secoes"] {
+  --mod-border: #bae6fd;
+  --mod-accent: #0284c7;
+  --mod-accent-weak: rgba(2, 132, 199, 0.12);
+  --mod-grad-a: #ffffff;
+  --mod-grad-b: #f5fbff;
+}
+.moduleCard[data-mod="contatos"] {
+  --mod-border: #ddd6fe;
+  --mod-accent: #7c3aed;
+  --mod-accent-weak: rgba(124, 58, 237, 0.12);
+  --mod-grad-a: #ffffff;
+  --mod-grad-b: #faf7ff;
+}
+.moduleCard[data-mod="usuarios"] {
+  --mod-border: #fecaca;
+  --mod-accent: #ef4444;
+  --mod-accent-weak: rgba(239, 68, 68, 0.12);
+  --mod-grad-a: #ffffff;
+  --mod-grad-b: #fff6f6;
+}
+
+/* Relatórios */
+.moduleCard[data-mod="relatorios/paradas"] {
+  --mod-border: #fcd34d;
+  --mod-accent: #a16207;
+  --mod-accent-weak: rgba(161, 98, 7, 0.12);
+  --mod-grad-a: #ffffff;
+  --mod-grad-b: #fff8eb;
+}
+
+/* Integrações */
+.moduleCard[data-mod="integracoes/whatsapp"] {
+  --mod-border: #86efac;
+  --mod-accent: #16a34a;
+  --mod-accent-weak: rgba(22, 163, 74, 0.12);
+  --mod-grad-a: #ffffff;
+  --mod-grad-b: #f3fff6;
+}
+
+/* Administração */
+.moduleCard[data-mod="admin/clientes"] {
+  --mod-border: #bfdbfe;
+  --mod-accent: #2563eb;
+  --mod-accent-weak: rgba(37, 99, 235, 0.12);
+  --mod-grad-a: #ffffff;
+  --mod-grad-b: #f4f8ff;
+}
+
+/* Configurações */
+.moduleCard[data-mod="settings"] {
+  --mod-border: #c4b5fd;
+  --mod-accent: #6d28d9;
+  --mod-accent-weak: rgba(109, 40, 217, 0.12);
+  --mod-grad-a: #ffffff;
+  --mod-grad-b: #f8f5ff;
+}
+.moduleCard[data-mod="permissoes"] {
+  --mod-border: #fda4af;
+  --mod-accent: #be123c;
+  --mod-accent-weak: rgba(190, 18, 60, 0.12);
+  --mod-grad-a: #ffffff;
+  --mod-grad-b: #fff5f7;
+}

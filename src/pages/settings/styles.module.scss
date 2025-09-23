@@ -1,0 +1,129 @@
+/* Topo */
+.topbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+.pageTitle {
+  margin: 0;
+  color: #e6eeff;
+}
+.hint {
+  color: #cfe0ff;
+  font-size: 0.9rem;
+}
+
+/* Form */
+.form {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 1rem;
+}
+.loading {
+  color: #e6eeff;
+}
+.row {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 900px) {
+  .row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.col {
+  display: grid;
+  gap: 0.35rem;
+}
+.label {
+  color: #cfe0ff;
+  font-size: 0.9rem;
+}
+
+/* Inputs */
+.input,
+.select {
+  padding: 0.6rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e6eeff;
+  outline: none;
+  transition: border 0.15s ease, box-shadow 0.15s ease;
+}
+.input:focus,
+.select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+.logoRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+}
+
+.previewWrap {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.5rem;
+}
+.logoPreview {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  background: #0b1220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.75rem;
+}
+
+/* Buttons */
+.actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+.primaryBtn,
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.62rem 0.9rem;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+}
+.primaryBtn {
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
+}
+.primaryBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.35);
+}
+.ghostBtn {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #0f172a;
+}
+.ghostBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.08);
+}
+
+/* Dicas */
+.hint code {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.05rem 0.35rem;
+  border-radius: 6px;
+}

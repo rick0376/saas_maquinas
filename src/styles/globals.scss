@@ -1,0 +1,45 @@
+/* ===== Reset mínimo seguro ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  /* habilita rolagem vertical e evita scroll lateral */
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* fontes e suavização */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Next.js root: permite layout com header/topo, conteúdo flexível e footer no rodapé */
+#__next {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Utilitários opcionais globais que já combinam com seu projeto */
+.card {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+/* Inputs e botões padrão (compatível com seus forms) */
+input,
+button,
+select,
+textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}

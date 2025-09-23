@@ -1,0 +1,217 @@
+/* ===== NAV (modelo) ===== */
+
+.nav {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.rightArea {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Usuário + ações */
+.userArea {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.userChip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+}
+.userAvatar {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  font-weight: 800;
+  color: #0f172a;
+  background: #e2f0e5;
+}
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+.userName {
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.userRole {
+  color: #cbd5e1;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+}
+
+/* Ações no header */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  color: #e5e7eb;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.actionBtn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);
+}
+.logoutBtn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border-color: rgba(239, 68, 68, 0.55);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.35);
+}
+.logoutBtn:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+/* Links simples (estado não-logado) */
+.linkBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  text-decoration: none;
+  font-weight: 700;
+}
+.linkBtn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Burger */
+.burger {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+.burger:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Dropdown suspenso (abaixo do header, à direita) */
+.dropdown {
+  position: absolute;
+  top: 70px;
+  right: 1rem;
+  min-width: 240px;
+  max-width: 92vw;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 14px 48px rgba(0, 0, 0, 0.18);
+  padding: 0.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 1100;
+}
+.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Itens do menu */
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  color: #111827;
+  text-decoration: none;
+  font-weight: 700;
+  width: 100%;
+}
+.item:hover {
+  background: #f3f4f6;
+}
+.itemIcon {
+  display: inline-flex;
+  width: 18px;
+  align-items: center;
+  justify-content: center;
+}
+.active {
+  background: #e5f0ff;
+  color: #1d4ed8;
+}
+
+/* Sair dentro do menu */
+.logoutItem {
+  color: #ef4444;
+  font-weight: 800;
+}
+.logoutItem:hover {
+  background: #fee2e2;
+}
+
+/* Divisor */
+.divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  margin: 0.25rem 0 0.5rem;
+}
+
+/* Overlay clique-fora */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  z-index: 1000;
+}
+
+/* Mostrar/ocultar conforme viewport */
+.hideOnMobile {
+  display: none;
+}
+.showOnMobile {
+  display: inline-flex;
+}
+
+@media (min-width: 768px) {
+  .hideOnMobile {
+    display: inline-flex;
+  }
+  .showOnMobile {
+    display: none;
+  }
+}
+
+@media (max-width: 510px) {
+  .userChip {
+    display: none;
+  }
+}

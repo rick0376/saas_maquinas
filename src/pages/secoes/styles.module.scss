@@ -1,0 +1,424 @@
+/* ===== TÍTULO / INTRO ===== */
+.topbar {
+  margin-bottom: 1rem;
+  display: grid;
+  gap: 0.35rem;
+}
+.titleRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #e2e8f0;
+  h1 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #e2e8f0;
+  }
+}
+.hintLay {
+  color: #e2e8f0;
+  font-size: 0.95rem;
+}
+.hint {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+/* ===== FORM CARD ===== */
+.formCard {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.fieldFull {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #374151;
+  letter-spacing: 0.02em;
+}
+.input {
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: #fff;
+}
+.input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+.actions {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.6rem;
+}
+
+/* ===== Botões padrão ===== */
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(5, 34, 99, 0.35);
+  background: #3973f0;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
+  font-weight: 800;
+  transition: 0.15s ease-in-out;
+}
+.primaryBtn:hover {
+  background: #1341c2;
+  border: 1px solid #a3b8f0;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.35);
+  filter: brightness(1.06);
+}
+.primaryBtn:active {
+  transform: translateY(1px);
+}
+.primaryBtn:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid #98a0ac;
+  background: #64748b;
+  color: #f3f5fa;
+  font-weight: 700;
+  transition: 0.15s ease-in-out;
+}
+.ghostBtn:hover {
+  border: 1px solid #98a0ac;
+  background: #475569;
+  color: #f6f7fa;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.08);
+}
+.ghostBtn:active {
+  transform: translateY(1px);
+}
+.ghostBtn:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+/* ===== TABELA ===== */
+.tableCard {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+.tableWrap {
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px; /* desktop: mantém largura confortável */
+}
+.table thead th {
+  text-align: left;
+  font-size: 0.85rem;
+  color: #475569;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.75rem 0.8rem;
+}
+.table tbody td {
+  padding: 0.75rem 0.8rem;
+  border-bottom: 1px solid #eef2f7;
+  vertical-align: middle;
+}
+.cellTitle {
+  font-weight: 700;
+  color: #0f172a;
+}
+.cellMuted {
+  color: #475569;
+}
+.colActions {
+  /* sem largura fixa grande no desktop para não travar o mobile */
+  width: auto;
+}
+.cellActions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center; /* desktop: ações à direita */
+}
+
+.table thead th:nth-child(4),
+.table tbody td:nth-child(4) {
+  text-align: center;
+}
+
+/* Botões de ação (tabela) */
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-weight: 800;
+  font-size: 0.9rem;
+  transition: 0.15s ease-in-out;
+}
+.editBtn {
+  border: 1px solid #946005;
+  background: #f59e0b;
+  color: #5c3c04;
+}
+.editBtn:hover {
+  background: #d97706;
+  border: 1px solid #e0b76f;
+  color: #f2f3f5;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.08);
+  filter: brightness(1.05);
+}
+.deleteBtn {
+  border: 1px solid #f1b4be;
+  background: #f43f5e;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.25);
+}
+.deleteBtn:hover {
+  background: #e96b6b;
+  color: #f1ebeb;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(239, 68, 68, 0.35);
+  filter: brightness(1.03);
+}
+
+.centerCell {
+  text-align: center;
+  color: #64748b;
+  font-weight: 600;
+  padding: 1rem 0.8rem;
+}
+
+/* ===== MODAL ===== */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 2000;
+}
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, calc(100% - 2rem));
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 14px;
+  box-shadow: 0 24px 64px rgba(2, 6, 23, 0.28);
+  z-index: 2001;
+  padding: 1.25rem 1.25rem 1rem;
+  animation: mod-pop 0.16s ease-out;
+}
+@keyframes mod-pop {
+  from {
+    transform: translate(-50%, -48%) scale(0.98);
+    opacity: 0.8;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+.modalIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #fee2e2;
+  color: #b91c1c;
+  margin-bottom: 0.5rem;
+}
+.modalTitle {
+  margin: 0.25rem 0 0.25rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+.modalText {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #334155;
+}
+.modalActions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+.dangerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid #f1b4be;
+  background: #f43f5e;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.25);
+  font-weight: 800;
+  transition: 0.15s ease-in-out;
+}
+.dangerBtn:hover {
+  background: #e96b6b;
+  color: #f1ebeb;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(239, 68, 68, 0.35);
+}
+.dangerBtn:active {
+  transform: translateY(1px);
+}
+.dangerBtn:focus {
+  outline: 2px solid #fecaca;
+  outline-offset: 2px;
+}
+
+/* ====== RESPONSIVIDADE ====== */
+
+/* <= 900px: fixa layout da tabela e controla colunas */
+@media (max-width: 900px) {
+  .table {
+    table-layout: fixed;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .table thead th,
+  .table tbody td {
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0.6rem 0.6rem;
+  }
+
+  /* 1: Nome */
+  .table thead th:nth-child(1),
+  .table tbody td:nth-child(1) {
+    width: 180px;
+  }
+
+  /* 2: Descrição — leva o espaço restante, até 2 linhas */
+  .table tbody td:nth-child(2) {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.3;
+  }
+
+  /* 3: Seção Pai */
+  .table thead th:nth-child(3),
+  .table tbody td:nth-child(3) {
+    width: 140px;
+  }
+
+  /* 4: Ações — estreita e à direita */
+  .table thead th:nth-child(4),
+  .table tbody td:nth-child(4) {
+    width: 100px;
+    text-align: center;
+  }
+  .colActions {
+    text-align: right;
+  }
+  .cellActions {
+    justify-content: flex-end;
+    gap: 0.4rem;
+  }
+
+  /* Botões: só ícone */
+  .actionBtn {
+    font-size: 0;
+    padding: 0;
+    width: 48px;
+    height: 28px;
+    display: inline-grid;
+    place-items: center;
+  }
+  .actionBtn svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* <= 800px: esconde Seção Pai */
+@media (max-width: 800px) {
+  .table thead th:nth-child(3),
+  .table tbody td:nth-child(3) {
+    display: none;
+  }
+}
+
+@media (max-width: 630px) {
+  .table thead th:nth-child(1),
+  .table tbody td:nth-child(1) {
+    width: 120px;
+    font-size: 12px;
+  }
+  .table thead th:nth-child(2),
+  .table tbody td:nth-child(2) {
+    font-size: 12px;
+  }
+  .table thead th:nth-child(4),
+  .table tbody td:nth-child(4) {
+    width: 100px;
+  }
+}
+
+@media (max-width: 440px) {
+  .table thead th:nth-child(1),
+  .table tbody td:nth-child(1) {
+    width: 100px;
+    font-size: 12px;
+  }
+  .table thead th:nth-child(2),
+  .table tbody td:nth-child(2) {
+    font-size: 12px;
+    width: 140px;
+  }
+}
