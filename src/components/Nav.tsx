@@ -7,11 +7,9 @@ export default function Nav() {
   return (
     <nav>
       <Link href="/admin/dashboard">Dashboard</Link>
-      {can("maquinas", "visualizar") && <Link href="/maquinas">Máquinas</Link>}
-      {can("clientes", "visualizar") && (
-        <Link href="/admin/clients">Clientes</Link>
-      )}
-      {can("contatos", "visualizar") && <Link href="/contatos">Contatos</Link>}
+      {can("maquinas", "view") && <Link href="/maquinas">Máquinas</Link>}
+      {can("clientes", "view") && <Link href="/admin/clients">Clientes</Link>}
+      {can("contatos", "view") && <Link href="/contatos">Contatos</Link>}
     </nav>
   );
 }
