@@ -13,9 +13,6 @@
     "seed": "prisma db seed",
     "postinstall": "prisma generate"
   },
-  "engines": {
-    "node": "18.x"
-  },
   "dependencies": {
     "@prisma/client": "^5.17.0",
     "bcryptjs": "^2.4.3",
@@ -49,5 +46,8 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
+  },
+  "engines": {
+    "node": "22.x"
   }
 }
