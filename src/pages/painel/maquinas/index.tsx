@@ -1131,7 +1131,7 @@ export default function Painel() {
                       <header className={styles.modalHeader}>
                         <div className={styles.modalTitleWrap}>
                           <Edit size={16} />
-                          <h4 className={styles.modalTitle}>Editar parada</h4>
+                          <h4 className={styles.modalTitle}>Editara parada</h4>
                         </div>
                         <button
                           className={styles.closeBtn}

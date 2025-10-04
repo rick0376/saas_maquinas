@@ -1253,10 +1253,7 @@
 
 .modal {
   position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
+  inset: 0 !important;
   z-index: 9999 !important;
   display: flex !important;
   align-items: center !important;
@@ -1264,9 +1261,9 @@
   background: rgba(0, 0, 0, 0.8) !important;
   backdrop-filter: blur(10px);
   animation: fadeIn 0.3s ease-out;
-  padding: 0 !important;
+  padding: 1rem !important; /* só um respiro */
   margin: 0 !important;
-  overflow: auto;
+  overflow: auto; /* se a caixa for maior que a tela, ainda dá p/ rolar */
 }
 
 .modalWrap {
@@ -1315,8 +1312,9 @@
   background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
   border-radius: 16px;
   padding: 0;
-  max-height: 90vh;
-  overflow: hidden;
+  max-height: calc(100dvh - 2rem); /* altura limitada ao viewport */
+  overflow: auto; /* rolagem interna da modal */
+  -webkit-overflow-scrolling: touch;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
@@ -1369,11 +1367,6 @@
   }
 }
 @media (max-width: 768px) {
-  .modal {
-    padding: 10rem 0.5rem 1rem;
-    align-items: flex-start;
-  }
-
   .modalWrap {
     margin: 0;
     margin-bottom: 1.5rem;
@@ -1392,16 +1385,12 @@
 }
 
 @media (max-width: 480px) {
-  .modal {
-    padding: 10rem 0.25rem 1rem; /* AJUSTE o padding superior */
-  }
-
   .modalWrap {
     margin: 0;
     margin-bottom: 1rem;
     padding: 0.75rem;
     max-width: calc(100vw - 0.5rem);
-    max-height: calc(100vh - 3rem); /* AJUSTE a altura máxima */
+    max-height: calc(100vh - 3rem);
   }
 
   .modalHeader {
@@ -1412,6 +1401,7 @@
   }
 }
 
+/* Mantém como está */
 .closeBtn {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1445,7 +1435,6 @@
   padding-top: 1rem;
   border-top: 1px solid #e5e7eb;
 }
-
 /* =========================
    Tabelas
    ========================= */
