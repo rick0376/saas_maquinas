@@ -3,7 +3,8 @@ import Layout from "@/components/layout";
 import styles from "./styles.module.scss";
 import { useEffect, useMemo, useRef, useState } from "react";
 import useSWR from "swr";
-import { Copy } from "lucide-react";
+import { Copy, Users, MessageCircle, X } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 
 // 🔐 Permissões
 import {
@@ -19,23 +20,16 @@ type TenantRes =
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
-// ===================== Helpers de telefone (BR) =====================
+/* ===================== Helpers de telefone (BR) ===================== */
 function onlyDigits(v: string) {
   return v.replace(/\D+/g, "");
 }
-/** Normaliza entrada "local" (DDD+numero) para E.164 Brasil: +55DDDNÚMERO */
 function toE164FromLocal(localDigits: string) {
   const d = onlyDigits(localDigits);
   if (!d) return "";
   const with55 = d.startsWith("55") ? d : `55${d}`;
   return `+${with55}`;
 }
-/** Converte do armazenado (+55...) para apenas DDD+numero (para input local) */
-function toLocalFromStored(stored: string) {
-  const d = onlyDigits(stored);
-  return d.startsWith("55") ? d.slice(2) : d;
-}
-/** Formata bonito um número armazenado (+55...) */
 function prettyFromStored(stored: string) {
   const d = onlyDigits(stored);
   const with55 = d.startsWith("55") ? d : `55${d}`;
@@ -54,18 +48,17 @@ function prettyFromStored(stored: string) {
     return `${country} (${ddd}) ${n1}${n2 ? "-" + n2 : ""}`;
   }
 }
-/** Máscara enquanto digita local (sem +55), ex: (11) 98765-4321 */
 function maskLocalTyping(localDigits: string) {
   const d = onlyDigits(localDigits).slice(0, 11);
   const ddd = d.slice(0, 2);
   const num = d.slice(2);
-  if (d.length <= 2) return ddd;
+  if (!ddd) return "";
   if (num.length > 5) return `(${ddd}) ${num.slice(0, 5)}-${num.slice(5, 9)}`;
   if (num.length > 0) return `(${ddd}) ${num}`;
   return `(${ddd}`;
 }
 
-// ===================== Página =====================
+/* ===================== Página ===================== */
 export default function WhatsappPage() {
   // 🔐 Sessão/Permissões
   const { data: sess } = useSWR<any>("/api/auth/session", fetcher, {
@@ -79,7 +72,6 @@ export default function WhatsappPage() {
   const canOpenWhatsApp = useMemo(() => can("open_whatsapp"), [sess, myRole]);
   const canCopyLink = useMemo(() => can("copy_link"), [sess, myRole]);
 
-  // 🔒 Bloqueia página se não puder visualizar
   if (sess && !canView) {
     return (
       <Layout requireAuth={true}>
@@ -93,29 +85,46 @@ export default function WhatsappPage() {
     );
   }
 
-  // Contatos do tenant atual (a API já filtra por tenantId)
+  // Contatos do tenant atual (ordenados A→Z)
   const { data } = useSWR<{ data: Contato[] }>("/api/contatos", fetcher, {
     revalidateOnFocus: false,
   });
-  const contatos: Contato[] = data?.data ?? [];
+  const contatos: Contato[] = useMemo(() => {
+    const base = data?.data ?? [];
+    return base
+      .slice()
+      .sort((a, b) =>
+        a.nome.localeCompare(b.nome, "pt-BR", { sensitivity: "base" })
+      );
+  }, [data?.data]);
 
   // Nome do cliente/fábrica atual
   const { data: tRes } = useSWR<TenantRes>("/api/tenant/current", fetcher);
   const tenantName =
     (tRes && "ok" in tRes && tRes.ok && tRes.data?.name) || "Sua Empresa";
 
-  // Estado: seleção de contato OU telefone digitado
-  const [selectedId, setSelectedId] = useState<string>(""); // contato
-  const [localPhone, setLocalPhone] = useState<string>(""); // DDD+numero (sem +55)
+  // Estados principais
+  const [selectedId, setSelectedId] = useState<string>("");
+  const [localPhone, setLocalPhone] = useState<string>("");
   const [message, setMessage] = useState<string>(
     "Olá! Teste do SaaS Máquinas ✅"
   );
   const [copied, setCopied] = useState(false);
 
-  // Canvas p/ QRCode
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  // Modais:
+  const [showChoiceModal, setShowChoiceModal] = useState(false); // escolha Direct x Broadcast
+  const [showHintModal, setShowHintModal] = useState<null | { text: string }>(
+    null
+  ); // aviso extra quando faltou contato/número ou mensagem
 
-  // Número final (E.164) prioriza o contato; se vazio, usa digitado
+  // Referências para UX (foco)
+  const selectContatoRef = useRef<HTMLSelectElement>(null);
+
+  // QRCode Canvas
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [qrType, setQrType] = useState<"direct" | "broadcast">("direct");
+
+  // Número final (E.164)
   const phoneE164 = useMemo(() => {
     const contato = contatos.find((c) => c.id === selectedId);
     if (contato?.celular) {
@@ -126,46 +135,119 @@ export default function WhatsappPage() {
     return manual || "";
   }, [contatos, selectedId, localPhone]);
 
-  // Link wa.me
-  const waLink = useMemo(() => {
+  // Links wa.me (para QR preview)
+  const directLink = useMemo(() => {
     if (!phoneE164) return "";
-    const phone = onlyDigits(phoneE164); // wa.me usa apenas dígitos
+    const phone = onlyDigits(phoneE164);
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   }, [phoneE164, message]);
 
-  // Gera QR quando mudar link
+  const broadcastLink = useMemo(() => {
+    if (!message.trim()) return "";
+    return `https://wa.me/?text=${encodeURIComponent(message)}`;
+  }, [message]);
+
+  // Link ativo p/ QR (apenas preview/QR)
+  const activeLink = qrType === "direct" ? directLink : broadcastLink;
+
+  // Gera QR quando mudar link ativo
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      if (!waLink || !canvasRef.current) return;
+      if (!activeLink || !canvasRef.current) return;
       const QR = (await import("qrcode")).default as any;
       if (cancelled) return;
-      QR.toCanvas(canvasRef.current, waLink, { width: 260 });
+      QR.toCanvas(canvasRef.current, activeLink, { width: 260 });
     })();
     return () => {
       cancelled = true;
     };
-  }, [waLink]);
+  }, [activeLink]);
+
+  // Fechar modais com ESC e travar scroll
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (showHintModal) setShowHintModal(null);
+        else if (showChoiceModal) setShowChoiceModal(false);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+
+    const anyOpen = showChoiceModal || showHintModal;
+    const prev = document.body.style.overflow;
+    if (anyOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = prev || "";
+
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev || "";
+    };
+  }, [showChoiceModal, showHintModal]);
 
   // Handlers
   function onSelectContato(id: string) {
     setSelectedId(id);
-    if (id) setLocalPhone(""); // limpa manual quando seleciona contato
+    if (id) setLocalPhone("");
   }
   function onManualPhoneChange(v: string) {
-    setSelectedId(""); // limpa contato quando digita manual
+    setSelectedId("");
     const digits = onlyDigits(v).slice(0, 11);
     setLocalPhone(digits);
   }
-  function maskedManual() {
-    return maskLocalTyping(localPhone);
-  }
+  const maskedManual = useMemo(() => maskLocalTyping(localPhone), [localPhone]);
+
   async function copyLink() {
-    // 🔐 trava extra
-    if (!canCopyLink || !waLink) return;
-    await navigator.clipboard.writeText(waLink);
+    if (!canCopyLink || !activeLink) return;
+    await navigator.clipboard.writeText(activeLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
+  }
+
+  // Sempre habilitado: decisão/validação acontece na modal
+  function openWhatsApp() {
+    if (!canOpenWhatsApp) return;
+    setShowChoiceModal(true);
+  }
+
+  // Escolha na primeira modal
+  function handleChoice(type: "direct" | "broadcast") {
+    if (type === "direct") {
+      if (!phoneE164) {
+        // fecha a modal de escolha e abre a de aviso
+        setShowChoiceModal(false);
+        setShowHintModal({
+          text: "Selecione um contato na lista ou informe um número manual para envio direto.",
+        });
+        return;
+      }
+      const phone = onlyDigits(phoneE164);
+      const link = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+      window.open(link, "_blank", "noopener,noreferrer");
+      setShowChoiceModal(false);
+      return;
+    }
+
+    // broadcast
+    if (!message.trim()) {
+      setShowChoiceModal(false);
+      setShowHintModal({
+        text: "Digite uma mensagem para poder usar o modo broadcast (WhatsApp abrirá para você escolher múltiplos contatos).",
+      });
+      return;
+    }
+    const link = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(link, "_blank", "noopener,noreferrer");
+    setShowChoiceModal(false);
+  }
+
+  // Ao fechar a modal de aviso, foca no select para facilitar
+  function closeHintAndFocus() {
+    setShowHintModal(null);
+    // foca no select de contato para o usuário já escolher
+    requestAnimationFrame(() => {
+      selectContatoRef.current?.focus();
+    });
   }
 
   return (
@@ -180,21 +262,21 @@ export default function WhatsappPage() {
               </span>
             </h1>
             <p className={styles.subtitle}>
-              Gere um QR para abrir a conversa no WhatsApp com mensagem
-              pré-preenchida.
+              Gere um QR e/ou abra o WhatsApp com mensagem pré-preenchida.
             </p>
           </div>
         </header>
 
         <section className={`card ${styles.card}`}>
           <header className={styles.cardHead}>
-            <h3>Destino</h3>
+            <h3>Configuração da Mensagem</h3>
           </header>
 
           <div className={styles.formGrid}>
             <div className={styles.col}>
               <label className={styles.label}>Selecionar contato</label>
               <select
+                ref={selectContatoRef}
                 className={styles.input}
                 value={selectedId}
                 onChange={(e) => onSelectContato(e.target.value)}
@@ -207,8 +289,7 @@ export default function WhatsappPage() {
                 ))}
               </select>
               <small className={styles.hint}>
-                Contatos vêm de <code>/api/contatos</code> e já são filtrados
-                pelo cliente/fábrica corrente.
+                Para envio <strong>direto</strong> a um contato específico.
               </small>
             </div>
 
@@ -217,12 +298,12 @@ export default function WhatsappPage() {
               <input
                 className={styles.input}
                 placeholder="(11) 9XXXX-XXXX"
-                value={maskedManual()}
+                value={maskedManual}
                 onChange={(e) => onManualPhoneChange(e.target.value)}
                 inputMode="numeric"
               />
               <small className={styles.hint}>
-                O link final usa o formato <strong>+55DDDNÚMERO</strong>.
+                Para envio <strong>direto</strong> sem usar a lista de contatos.
               </small>
             </div>
 
@@ -236,47 +317,82 @@ export default function WhatsappPage() {
                 placeholder="Escreva a mensagem que aparecerá pré-preenchida…"
               />
               <small className={styles.hint}>
-                Emojis e quebras de linha são suportados.
+                Esta mensagem será usada tanto para{" "}
+                <strong>envio direto</strong> quanto para{" "}
+                <strong>broadcast</strong>.
               </small>
             </div>
           </div>
 
+          {/* Seletor do tipo — apenas para o QR Preview */}
+          <div className={styles.typeSelector}>
+            <label className={styles.label}>
+              Tipo de QR Code (pré-visualização)
+            </label>
+            <div className={styles.typeButtons}>
+              <button
+                className={`${styles.typeBtn} ${
+                  qrType === "direct" ? styles.active : ""
+                }`}
+                onClick={() => setQrType("direct")}
+              >
+                <MessageCircle size={20} />
+                <div>
+                  <strong>Envio Direto</strong>
+                  <span>Para 1 contato específico</span>
+                </div>
+              </button>
+              <button
+                className={`${styles.typeBtn} ${
+                  qrType === "broadcast" ? styles.active : ""
+                }`}
+                onClick={() => setQrType("broadcast")}
+              >
+                <Users size={20} />
+                <div>
+                  <strong>Broadcast</strong>
+                  <span>Usuário escolhe múltiplos contatos</span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Preview: QR + Link + Ações */}
           <div className={styles.preview}>
             <div className={styles.qrBox}>
               <canvas ref={canvasRef} />
+              <div className={styles.qrLabel}>
+                {qrType === "direct" ? "Envio Direto" : "Broadcast"}
+              </div>
             </div>
 
             <div className={styles.linkBox}>
-              <label className={styles.label}>Link gerado</label>
+              <label className={styles.label}>
+                Link gerado (pré-visualização)
+              </label>
               <input
                 className={styles.input}
-                value={waLink || "— informe um telefone e a mensagem —"}
+                value={activeLink || "— configure a mensagem —"}
                 readOnly
               />
               <div className={styles.actions}>
-                {/* 🔐 Abrir no WhatsApp: visível só se permitido */}
+                {/* Sempre habilitado — decisão/validação acontece na modal */}
                 {canOpenWhatsApp && (
-                  <a
+                  <button
                     className={styles.primaryBtn}
-                    href={waLink || "#"}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-disabled={!waLink}
-                    onClick={(e) => {
-                      if (!waLink) e.preventDefault();
-                    }}
+                    onClick={openWhatsApp}
                     title="Abrir no WhatsApp"
                   >
-                    Abrir no WhatsApp
-                  </a>
+                    <FaWhatsapp size={18} />
+                    Abrir WhatsApp
+                  </button>
                 )}
 
-                {/* 🔐 Copiar: visível só se permitido */}
                 {canCopyLink && (
                   <button
                     className={styles.ghostBtn}
                     onClick={copyLink}
-                    disabled={!waLink}
+                    disabled={!activeLink}
                     title="Copiar link"
                   >
                     <Copy size={16} />
@@ -287,12 +403,102 @@ export default function WhatsappPage() {
                 {copied && <span className={styles.toast}>Link copiado!</span>}
               </div>
               <small className={styles.hint}>
-                Dica: teste o QR com a câmera do celular. Ele abrirá o WhatsApp
-                (app ou web).
+                O QR acima muda conforme o tipo selecionado para
+                pré-visualização.
               </small>
             </div>
           </div>
         </section>
+
+        {/* ===== Modal 1 — Escolher tipo de envio ===== */}
+        {showChoiceModal && (
+          <>
+            <div
+              className={styles.modalOverlay}
+              onClick={() => setShowChoiceModal(false)}
+            />
+            <div
+              className={styles.modal}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Escolher tipo de envio"
+            >
+              <div className={styles.modalHeader}>
+                <h3>Como deseja enviar?</h3>
+                <button
+                  className={styles.modalClose}
+                  onClick={() => setShowChoiceModal(false)}
+                  aria-label="Fechar"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className={styles.modalContent}>
+                <button
+                  className={styles.modalOption}
+                  onClick={() => handleChoice("direct")}
+                  title="Enviar direto para o contato selecionado ou número manual"
+                >
+                  <MessageCircle size={24} />
+                  <div className={styles.modalOptionContent}>
+                    <strong>Envio Direto</strong>
+                    <span>Vai para o chat do contato selecionado</span>
+                  </div>
+                </button>
+
+                <button
+                  className={styles.modalOption}
+                  onClick={() => handleChoice("broadcast")}
+                  title="Abrir WhatsApp para escolher múltiplos contatos"
+                >
+                  <Users size={24} />
+                  <div className={styles.modalOptionContent}>
+                    <strong>Broadcast</strong>
+                    <span>Você escolhe múltiplos contatos no WhatsApp</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ===== Modal 2 — Aviso (quando faltou contato/número ou mensagem) ===== */}
+        {showHintModal && (
+          <>
+            <div className={styles.modalOverlay} onClick={closeHintAndFocus} />
+            <div
+              className={styles.modal}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Ação necessária"
+            >
+              <div className={styles.modalHeader}>
+                <h3>Ação necessária</h3>
+                <button
+                  className={styles.modalClose}
+                  onClick={closeHintAndFocus}
+                  aria-label="Fechar"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className={styles.modalContent}>
+                <p style={{ margin: 0 }}>{showHintModal.text}</p>
+              </div>
+
+              <div className={styles.modalFooter}>
+                <button
+                  className={styles.primaryBtn}
+                  onClick={closeHintAndFocus}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </Layout>
   );

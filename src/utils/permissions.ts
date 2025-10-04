@@ -1,5 +1,7 @@
 // src/utils/permissions.ts
 
+const MODULE = "painel_maquinas" as const;
+
 export type Role = "USER" | "ADMIN" | "SUPERADMIN";
 
 /** Módulos (1-para-1 com suas páginas/áreas) */

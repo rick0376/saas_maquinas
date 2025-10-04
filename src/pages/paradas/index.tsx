@@ -160,6 +160,29 @@ export default function ParadasList() {
     router.push(`/paradas/${firstSelectedId}/editar`);
   }
 
+  // Adicione estes novos estados junto com os outros
+  const [alertModal, setAlertModal] = useState<{
+    title: string;
+    message: string;
+    type: "error" | "warning" | "info";
+  } | null>(null);
+
+  // Função helper para mostrar alertas
+  function showAlert(
+    title: string,
+    message: string,
+    type: "error" | "warning" | "info" = "warning"
+  ) {
+    setAlertModal({ title, message, type });
+  }
+
+  function closeAlert() {
+    setAlertModal(null);
+  }
+
+  // ====== NOVO: modal de confirmação de envio ======
+  const [confirmWaOpen, setConfirmWaOpen] = useState(false);
+
   // modal whatsapp (apenas 1 destino)
   const [waOpen, setWaOpen] = useState(false);
   const { data: contatosRes } = useSWR<{ data: Contato[] }>(
@@ -214,21 +237,71 @@ export default function ParadasList() {
     setCustomMessage("");
   }
 
-  function sendWhatsApp() {
+  // ====== NOVO: abrir WhatsApp direto (sem destino) ======
+  function openWhatsAppDirectFromSelection() {
     if (!canWhatsapp) {
-      alert("Sem permissão para enviar via WhatsApp.");
+      showAlert(
+        "Sem Permissão",
+        "Você não tem permissão para enviar via WhatsApp.",
+        "error"
+      );
       return;
     }
     const paradasSel = selectedParadas();
     if (paradasSel.length === 0) {
-      alert("Selecione ao menos uma parada.");
+      showAlert(
+        "Nenhuma Parada",
+        "Selecione ao menos uma parada para enviar.",
+        "warning"
+      );
       return;
     }
     const msg =
       (customMessage && customMessage.trim()) ||
       buildDefaultMessage(paradasSel);
     if (!msg) {
-      alert("Mensagem vazia.");
+      showAlert(
+        "Mensagem Vazia",
+        "A mensagem não pode estar vazia.",
+        "warning"
+      );
+      return;
+    }
+    const enc = encodeURIComponent(msg);
+    const url = `https://wa.me/?text=${enc}`; // sem número → escolher contatos no app
+    window.open(url, "_blank", "noopener,noreferrer");
+    setConfirmWaOpen(false);
+  }
+
+  function sendWhatsApp() {
+    if (!canWhatsapp) {
+      showAlert(
+        "Sem Permissão",
+        "Você não tem permissão para enviar via WhatsApp.",
+        "error"
+      );
+      return;
+    }
+
+    const paradasSel = selectedParadas();
+    if (paradasSel.length === 0) {
+      showAlert(
+        "Nenhuma Parada",
+        "Selecione ao menos uma parada para enviar.",
+        "warning"
+      );
+      return;
+    }
+
+    const msg =
+      (customMessage && customMessage.trim()) ||
+      buildDefaultMessage(paradasSel);
+    if (!msg) {
+      showAlert(
+        "Mensagem Vazia",
+        "A mensagem não pode estar vazia.",
+        "warning"
+      );
       return;
     }
 
@@ -243,7 +316,11 @@ export default function ParadasList() {
     }
 
     if (!target) {
-      alert("Selecione um contato ou informe um número.");
+      showAlert(
+        "Contato Necessário",
+        "Selecione um contato ou informe um número manual.",
+        "warning"
+      );
       return;
     }
 
@@ -300,7 +377,7 @@ export default function ParadasList() {
               onClick={() => {
                 const msg = buildDefaultMessage(selectedParadas());
                 setCustomMessage(msg);
-                setWaOpen(true);
+                setConfirmWaOpen(true); // ← abre confirmação primeiro
               }}
               title={
                 selectedIds.size === 0
@@ -313,6 +390,45 @@ export default function ParadasList() {
           )}
         </div>
       </div>
+
+      {/* Modal de Alerta Industrial */}
+      {alertModal && (
+        <>
+          <div className={styles.alertOverlay} onClick={closeAlert} />
+          <div
+            className={styles.alertModalContainer}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div
+              className={styles.alertModal}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                className={`${styles.alertIcon} ${
+                  styles[
+                    `alert${
+                      alertModal.type.charAt(0).toUpperCase() +
+                      alertModal.type.slice(1)
+                    }`
+                  ]
+                }`}
+              >
+                {alertModal.type === "error" && "⚠"}
+                {alertModal.type === "warning" && "⚠"}
+                {alertModal.type === "info" && "ℹ"}
+              </div>
+              <h3 className={styles.alertTitle}>{alertModal.title}</h3>
+              <p className={styles.alertText}>{alertModal.message}</p>
+              <div className={styles.alertActions}>
+                <button className={styles.primaryBtn} onClick={closeAlert}>
+                  Entendi
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* filtros */}
       <div className={`card ${styles.filters}`}>
@@ -445,6 +561,52 @@ export default function ParadasList() {
           </table>
         </div>
       </div>
+
+      {/* ===== NOVO: modal de confirmação de envio via WhatsApp ===== */}
+      {confirmWaOpen && canWhatsapp && (
+        <>
+          <div
+            className={styles.modalOverlay}
+            onClick={() => setConfirmWaOpen(false)}
+          />
+          <div className={styles.modal} role="dialog" aria-modal="true">
+            <div className={`card ${styles.modalCard}`}>
+              <h3 className={styles.modalTitle}>Como deseja enviar?</h3>
+              <p className={styles.modalText}>
+                {selectedIds.size} parada(s) selecionada(s). Escolha uma opção
+                abaixo:
+              </p>
+              <div className={styles.modalActions}>
+                <button
+                  className={styles.ghostBtn}
+                  onClick={() => setConfirmWaOpen(false)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  className={styles.ghostWBtn}
+                  onClick={() => {
+                    // Abrir WhatsApp sem número (escolher múltiplos contatos)
+                    openWhatsAppDirectFromSelection();
+                  }}
+                >
+                  Escolher contatos no WhatsApp
+                </button>
+                <button
+                  className={styles.primaryBtn}
+                  onClick={() => {
+                    // Ir para o modal existente de contato cadastrado
+                    setConfirmWaOpen(false);
+                    setWaOpen(true);
+                  }}
+                >
+                  Usar contato cadastrado
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* modal whatsapp — 1 contato */}
       {waOpen && canWhatsapp && (

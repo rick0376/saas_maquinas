@@ -1,9 +1,10 @@
 // src/pages/painel/maquinas/index.tsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import useSWR from "swr";
 import Layout from "@/components/layout";
 import styles from "./styles.module.scss";
 import { FaWhatsapp } from "react-icons/fa";
+import { createPortal } from "react-dom";
 import {
   Filter,
   X,
@@ -17,6 +18,9 @@ import {
   Factory,
   Cog,
   MessageCircle,
+  Maximize2,
+  Minimize2,
+  Eye,
 } from "lucide-react";
 
 /* ===== Tipagens ===== */
@@ -208,6 +212,7 @@ export default function Painel() {
   ).length;
 
   /* ===== Estado UI ===== */
+  const [fullscreen, setFullscreen] = useState<boolean>(false); // ← NOVO
   const [selecaoSecao, setSelecaoSecao] = useState<string>("TODAS");
   const [selected, setSelected] = useState<Maquina | null>(null);
   const [status, setStatus] = useState<"TODAS" | "ATIVA" | "FINALIZADA">(
@@ -231,6 +236,9 @@ export default function Painel() {
   /* ===== Seleção de paradas (para WhatsApp) ===== */
   const [selIds, setSelIds] = useState<Set<string>>(new Set());
   const selCount = selIds.size;
+  //const selCount = useMemo(() => selIds.size, [selIds]);
+
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
   function toggleSelect(id: string) {
     setSelIds((prev) => {
@@ -285,7 +293,6 @@ export default function Painel() {
       : `https://wa.me/?text=${encodeURIComponent(text)}`;
 
     window.open(url, "_blank", "noopener,noreferrer");
-    //window.open(url, "whatsappWindow", "noopener,noreferrer");
   }
 
   /* ===== Agrupamento ===== */
@@ -473,7 +480,7 @@ export default function Painel() {
           };
         }
 
-        // 404 pode ser “parada não encontrada” ou caminho errado
+        // 404 pode ser "parada não encontrada" ou caminho errado
         if (res.status === 404) {
           lastMessage =
             data?.message || data?.error || "Parada não encontrada.";
@@ -551,6 +558,23 @@ export default function Painel() {
     return () => window.removeEventListener("keydown", onKey);
   }, [editOpen, selected, confirm.open]);
 
+  useEffect(() => {
+    if (!selected) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && e.target === modalRef.current) {
+        setSelected(null);
+      }
+    };
+
+    const node = modalRef.current;
+    if (node) node.addEventListener("click", handleClickOutside);
+
+    return () => {
+      if (node) node.removeEventListener("click", handleClickOutside);
+    };
+  }, [selected]);
+
   // trava o scroll quando alguma modal estiver aberta
   useEffect(() => {
     const anyOpen = !!selected || editOpen || confirm.open || wppOpen;
@@ -561,7 +585,7 @@ export default function Painel() {
     };
   }, [selected, editOpen, confirm.open, wppOpen]);
 
-  /* ===== Componente do card da máquina (calcula “status visual”) ===== */
+  /* ===== Componente do card da máquina (calcula "status visual") ===== */
   function MachineItem({ m }: { m: Maquina }) {
     const shouldCheck = m.status !== "ATIVA";
     const { data } = useSWR<{ ok: boolean; data: Parada[] }>(
@@ -608,68 +632,98 @@ export default function Painel() {
   return (
     <Layout requireAuth={true}>
       <div className={styles.container}>
-        <h1 className={styles.title}>Painel de Máquinas</h1>
+        {/* Header fixo; botão só alterna fullscreen */}
+        <div className={styles.headerRow}>
+          <h1 className={styles.title}>Painel de Máquinas</h1>
+          <button
+            type="button"
+            className={styles.fullscreenBtn}
+            onClick={() => setFullscreen((v) => !v)}
+            title={
+              fullscreen
+                ? "Sair do modo tela cheia"
+                : "Modo tela cheia - Ocultar KPIs e filtros"
+            }
+          >
+            {fullscreen ? (
+              <>
+                <Minimize2 size={20} />
+                <span className={styles.btnText}>Mostrar KPIs</span>
+              </>
+            ) : (
+              <>
+                <Maximize2 size={20} />
+                <span className={styles.btnText}>Tela Cheia</span>
+              </>
+            )}
+          </button>
+        </div>
 
-        {/* KPIs */}
-        <section className={styles.kpis} aria-live="polite">
-          <div className={`card ${styles.kpiT}`}>
-            <span className={styles.kpiLabel}>Total </span>
-            <strong className={styles.kpiValue}>{totais.total}</strong>
-            <span className={styles.kpiHint}>
-              <Factory size={16} className={styles.timerT} /> Máquinas
-            </span>
-          </div>
-          <div className={`card ${styles.kpiF}`}>
-            <span className={styles.kpiLabel}>Funcionando </span>
-            <strong className={`${styles.kpiValue} ${styles.good}`}>
-              {totais.ativas}
-            </strong>
-            <span className={styles.kpiHint}>
-              <Cog size={16} strokeWidth={2} className={styles.timerF} /> ATIVA
-            </span>
-          </div>
-          <div className={`card ${styles.kpiP}`}>
-            <span className={styles.kpiLabel}>Paradas (N/Oper.) </span>
-            <strong className={`${styles.kpiValue} ${styles.bad}`}>
-              {paradasNaoOperacionais}
-            </strong>
-            <span className={styles.kpiHint}>
-              <Clock size={16} strokeWidth={2} className={styles.timerP} />{" "}
-              PARADA
-            </span>
-          </div>
-          <div className={`card ${styles.kpiM}`}>
-            <span className={styles.kpiLabel}>Manutenção (Oper.) </span>
-            <strong className={`${styles.kpiValue} ${styles.warn}`}>
-              {paradasOperacionais}
-            </strong>
-            <span className={styles.kpiHint}>
-              <Clock size={16} strokeWidth={2} className={styles.timerM} />{" "}
-              MANUTENÇÃO
-            </span>
-          </div>
-        </section>
+        {/* KPIs — escondidos no fullscreen */}
+        {!fullscreen && (
+          <section className={styles.kpis} aria-live="polite">
+            <div className={`${styles.kpi} ${styles.kpiT}`}>
+              <span className={styles.kpiLabel}>Total</span>
+              <strong className={styles.kpiValue}>{totais.total}</strong>
+              <span className={styles.kpiHint}>
+                <Factory size={22} className={styles.timerT} /> Máquinas
+              </span>
+            </div>
+            <div className={`${styles.kpi} ${styles.kpiF}`}>
+              <span className={styles.kpiLabel}>Funcionando</span>
+              <strong className={`${styles.kpiValue} ${styles.good}`}>
+                {totais.ativas}
+              </strong>
+              <span className={styles.kpiHint}>
+                <Cog size={22} strokeWidth={2} className={styles.timerF} />{" "}
+                ATIVA
+              </span>
+            </div>
+            <div className={`${styles.kpi} ${styles.kpiP}`}>
+              <span className={styles.kpiLabel}>Paradas (N/Oper.)</span>
+              <strong className={`${styles.kpiValue} ${styles.bad}`}>
+                {paradasNaoOperacionais}
+              </strong>
+              <span className={styles.kpiHint}>
+                <Clock size={22} strokeWidth={2} className={styles.timerP} />{" "}
+                PARADA
+              </span>
+            </div>
+            <div className={`${styles.kpi} ${styles.kpiM}`}>
+              <span className={styles.kpiLabel}>Manutenção (Oper.)</span>
+              <strong className={`${styles.kpiValue} ${styles.warn}`}>
+                {paradasOperacionais}
+              </strong>
+              <span className={styles.kpiHint}>
+                <Clock size={22} strokeWidth={2} className={styles.timerM} />{" "}
+                MANUTENÇÃO
+              </span>
+            </div>
+          </section>
+        )}
 
-        {/* Filtro de Seção */}
-        <form className={styles.form}>
-          <div className={styles.filterSection}>
-            <select
-              className={styles.input}
-              value={selecaoSecao}
-              onChange={(e) => setSelecaoSecao(e.target.value)}
-            >
-              <option value="TODAS">Todas as Seções</option>
-              {Object.keys(grupos).map((secao) => (
-                <option key={secao} value={secao}>
-                  {secao}
-                </option>
-              ))}
-              <option value="Sem seção">Sem Seção</option>
-            </select>
-          </div>
-        </form>
+        {/* Filtro — escondido no fullscreen */}
+        {!fullscreen && (
+          <form className={styles.form}>
+            <div className={styles.filterSection}>
+              <select
+                className={styles.input}
+                value={selecaoSecao}
+                onChange={(e) => setSelecaoSecao(e.target.value)}
+              >
+                <option value="TODAS">Todas as Seções</option>
+                {Object.keys(grupos).map((secao) => (
+                  <option key={secao} value={secao}>
+                    {secao}
+                  </option>
+                ))}
+                <option value="Sem seção">Sem Seção</option>
+              </select>
+            </div>
+          </form>
+        )}
 
-        {/* Seções / Máquinas */}
+        {/* Seções / Máquinas — INALTERADO */}
         <div className={styles.sectionsGrid}>
           {Object.entries(grupos)
             .filter(
@@ -696,581 +750,592 @@ export default function Painel() {
               </section>
             ))}
         </div>
-
-        {/* ===== Modal HISTÓRICO ===== */}
-        {selected && (
-          <div
-            className={styles.modalOverlay}
-            onClick={() => {
-              setSelected(null);
-              clearSelection();
-            }}
-            aria-hidden
-          >
+        {/* ===== TODOS OS MODAIS ORIGINAIS PERMANECEM IGUAIS ===== */}
+        {/* Modal HISTÓRICO */}
+        {selected &&
+          createPortal(
             <div
-              className={styles.modal}
-              role="dialog"
-              aria-modal="true"
-              onClick={(e) => e.stopPropagation()}
+              className={styles.modalOverlay}
+              onClick={() => {
+                setSelected(null);
+                clearSelection();
+              }}
+              aria-hidden
             >
-              <div className={styles.modalCard}>
-                <header className={styles.modalHeader}>
-                  <div className={styles.modalTitleWrap}>
-                    <Search size={16} />
-                    <h4 className={styles.modalTitle}>
-                      <span className={styles.hideOnMobile}>Histórico — </span>
-                      {selected.nome}{" "}
-                      <span className={styles.dim}>({selected.codigo})</span>
-                    </h4>
-                  </div>
-
-                  {/* Ações no cabeçalho: WhatsApp + Fechar */}
-                  <div
-                    className={styles.filterItem}
-                    style={{ display: "flex", gap: 8 }}
-                  >
-                    <button
-                      className={styles.whatsBtn}
-                      disabled={selCount === 0}
-                      onClick={() => setWppOpen(true)}
-                      title={
-                        selCount === 0
-                          ? "Selecione ao menos uma parada para enviar"
-                          : `Enviar ${selCount} registro(s) por WhatsApp`
-                      }
-                    >
-                      <FaWhatsapp size={16} /> <span>WhatsApp</span>
-                    </button>
-
-                    <button
-                      className={styles.closeBtn}
-                      onClick={() => {
-                        setSelected(null);
-                        clearSelection();
-                      }}
-                      aria-label="Fechar"
-                      title="Fechar"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                </header>
-
-                <div className={styles.modalWrap}>
-                  {/* Filtros */}
-                  <div className={styles.filters}>
-                    <div className={styles.filterItem}>
-                      <Filter size={14} />
-                      <select
-                        className={styles.input}
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value as any)}
-                      >
-                        <option value="TODAS">Todas</option>
-                        <option value="ATIVA">Em andamento</option>
-                        <option value="FINALIZADA">Finalizadas</option>
-                      </select>
-                    </div>
-                    <div className={styles.filterItem}>
-                      <Calendar size={14} />
-                      <input
-                        type="datetime-local"
-                        className={styles.input}
-                        value={inicioDe}
-                        onChange={(e) => setInicioDe(e.target.value)}
-                      />
-                    </div>
-                    <div className={styles.filterItem}>
-                      <Calendar size={14} />
-                      <input
-                        type="datetime-local"
-                        className={styles.input}
-                        value={inicioAte}
-                        onChange={(e) => setInicioAte(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Tabela */}
-                  <div className={styles.tableWrap}>
-                    <table className={`${styles.table} ${styles.fixedTable}`}>
-                      <thead>
-                        <tr>
-                          <th className={styles.checkCol}>
-                            {/* selecionar todos */}
-                            <input
-                              type="checkbox"
-                              aria-label="Selecionar todos"
-                              checked={
-                                !!hist?.data?.length &&
-                                selCount > 0 &&
-                                selCount === hist.data.length
-                              }
-                              ref={(el) => {
-                                if (!el || !hist?.data?.length) return;
-                                el.indeterminate =
-                                  selCount > 0 &&
-                                  selCount < (hist?.data?.length ?? 0);
-                              }}
-                              onChange={(e) => {
-                                if (!hist?.data) return;
-                                if (e.target.checked) {
-                                  selectAll(hist.data.map((p) => p.id));
-                                } else {
-                                  clearSelection();
-                                }
-                              }}
-                            />
-                          </th>
-                          <th className={styles.catCol}>Categoria</th>
-                          <th className={styles.motivoCol}>Motivo</th>
-                          <th className={styles.dateCol}>Início</th>
-                          <th className={styles.dateCol}>Fim</th>
-                          <th className={styles.duracaoCol}>Duração</th>
-                          <th className={styles.equipeCol}>Equipe</th>
-                          <th className={styles.obsCol}>Observação</th>
-                          <th className={styles.acoesCol}>Ações</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {hist?.data?.length ? (
-                          hist.data.map((p) => (
-                            <tr key={p.id}>
-                              <td>
-                                <input
-                                  type="checkbox"
-                                  checked={selIds.has(p.id)}
-                                  onChange={() => toggleSelect(p.id)}
-                                  aria-label="Selecionar parada"
-                                />
-                              </td>
-                              <td>
-                                <span
-                                  className={`${styles.cat} ${
-                                    p.categoria
-                                      ? (styles as any)["cat-" + p.categoria]
-                                      : ""
-                                  }`}
-                                >
-                                  {labelCategoria(p.categoria)}
-                                </span>
-                              </td>
-                              <td
-                                className={styles.motivoCell}
-                                title={p.motivo}
-                              >
-                                {p.motivo}
-                              </td>
-
-                              <td>{fmtData(p.horaInicio)}</td>
-                              <td>
-                                {p.horaFinalizacao ? (
-                                  fmtData(p.horaFinalizacao)
-                                ) : (
-                                  <span className={styles.tagWarn}>
-                                    Em aberto
-                                  </span>
-                                )}
-                              </td>
-                              <td>
-                                {fmtDuracao(p.horaInicio, p.horaFinalizacao)}
-                              </td>
-                              <td>{p.equipeAtuando ?? "-"}</td>
-                              <td
-                                className={styles.obsCell}
-                                title={p.observacao ?? "-"}
-                              >
-                                {p.observacao ?? "-"}
-                              </td>
-                              <td>
-                                <button
-                                  className={styles.editBtn}
-                                  onClick={() => openEditModal(p)}
-                                  title="Editar parada"
-                                >
-                                  <Edit size={16} />
-                                </button>
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={9} className={styles.noData}>
-                              Nenhum registro encontrado
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ===== Modal de Envio WhatsApp (sobreposta) ===== */}
-            {wppOpen && selected && (
               <div
-                className={styles.modalOverlay2}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setWppOpen(false);
-                }}
-                aria-hidden
+                ref={modalRef}
+                className={styles.modal}
+                role="dialog"
+                aria-modal="true"
+                onClick={(e) => e.stopPropagation()}
               >
-                <div
-                  className={styles.modalSm}
-                  role="dialog"
-                  aria-modal="true"
-                  aria-labelledby="wppSendTitle"
-                  onClick={(e) => e.stopPropagation()}
-                >
+                <div className={styles.modalCard}>
                   <header className={styles.modalHeader}>
                     <div className={styles.modalTitleWrap}>
-                      <MessageCircle size={16} />
-                      <h4 className={styles.modalTitle} id="wppSendTitle">
+                      <Search size={16} />
+                      <h4 className={styles.modalTitle}>
                         <span className={styles.hideOnMobile}>
-                          {" "}
-                          Enviar Mensagens —{" "}
+                          Histórico —{" "}
                         </span>
-                        {selected.nome} ({selected.codigo})
+                        {selected.nome}{" "}
+                        <span className={styles.dim}>({selected.codigo})</span>
                       </h4>
                     </div>
-                    <button
-                      className={styles.closeBtn}
-                      onClick={() => setWppOpen(false)}
-                      aria-label="Fechar"
+
+                    {/* Ações no cabeçalho: WhatsApp + Fechar */}
+                    <div
+                      className={styles.filterItem}
+                      style={{ display: "flex", gap: 8 }}
                     >
-                      <X size={16} />
-                    </button>
+                      <button
+                        className={styles.whatsBtn}
+                        disabled={selCount === 0}
+                        onClick={() => setWppOpen(true)}
+                        title={
+                          selCount === 0
+                            ? "Selecione ao menos uma parada para enviar"
+                            : `Enviar ${selCount} registro(s) por WhatsApp`
+                        }
+                      >
+                        <FaWhatsapp size={16} /> <span>WhatsApp</span>
+                      </button>
+
+                      <button
+                        className={styles.closeBtn}
+                        onClick={() => {
+                          setSelected(null);
+                          clearSelection();
+                        }}
+                        aria-label="Fechar"
+                        title="Fechar"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
                   </header>
 
-                  <div className={styles.form}>
-                    {/* Selector de contato (igual ao pages/paradas) */}
-                    <div className={styles.formRow}>
-                      <label>Selecione um contato</label>
-                      <select
-                        className={styles.input}
-                        value={selectedContatoId}
-                        onChange={(e) => setSelectedContatoId(e.target.value)}
-                      >
-                        <option value="">— Selecione —</option>
-                        {contatos.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.nome} — {prettyE164(c.celular)}
-                          </option>
-                        ))}
-                      </select>
-                      <small className={styles.dim}>
-                        Contatos carregados de <code>/api/contatos</code>.
-                      </small>
-                    </div>
-
-                    {/* Número manual (prioritário) */}
-                    <div className={styles.formRow}>
-                      <label>Ou informe um número (prioritário)</label>
-                      <input
-                        className={styles.input}
-                        placeholder="(11) 9XXXX-XXXX ou 11999998888"
-                        value={manualNumber}
-                        onChange={(e) => setManualNumber(e.target.value)}
-                      />
-                      <small className={styles.hint}>
-                        Convertemos automaticamente para +55 (E.164).
-                      </small>
-                    </div>
-
-                    {/* Prévia da mensagem */}
-                    <div className={styles.formRow}>
-                      <label>Prévia da mensagem</label>
-                      <div
-                        style={{
-                          whiteSpace: "pre-wrap",
-                          fontFamily:
-                            "ui-monospace, SFMono-Regular, Menlo, monospace",
-                          border: "1px dashed var(--border)",
-                          borderRadius: 8,
-                          padding: 12,
-                          background: "var(--muted)",
-                          maxHeight: 220,
-                          overflow: "auto",
-                        }}
-                      >
-                        {(() => {
-                          const all = (hist?.data ?? []).filter((p) =>
-                            selIds.has(p.id)
-                          );
-                          return all.length
-                            ? buildMensagemWhatsApp(all, selected)
-                            : "Selecione as paradas no histórico para compor a mensagem.";
-                        })()}
+                  <div className={styles.modalWrap}>
+                    {/* Filtros */}
+                    <div className={styles.filters}>
+                      <div className={styles.filterItem}>
+                        <Filter size={14} />
+                        <select
+                          className={styles.input}
+                          value={status}
+                          onChange={(e) => setStatus(e.target.value as any)}
+                        >
+                          <option value="TODAS">Todas</option>
+                          <option value="ATIVA">Em andamento</option>
+                          <option value="FINALIZADA">Finalizadas</option>
+                        </select>
+                      </div>
+                      <div className={styles.filterItem}>
+                        <Calendar size={14} />
+                        <input
+                          type="datetime-local"
+                          className={styles.input}
+                          value={inicioDe}
+                          onChange={(e) => setInicioDe(e.target.value)}
+                        />
+                      </div>
+                      <div className={styles.filterItem}>
+                        <Calendar size={14} />
+                        <input
+                          type="datetime-local"
+                          className={styles.input}
+                          value={inicioAte}
+                          onChange={(e) => setInicioAte(e.target.value)}
+                        />
                       </div>
                     </div>
 
-                    <div className={styles.modalFooter}>
-                      <button
-                        type="button"
-                        className={styles.whatsBtn}
-                        disabled={selCount === 0}
-                        onClick={() => {
-                          const paradasSel = (hist?.data ?? []).filter((p) =>
-                            selIds.has(p.id)
-                          );
-                          abrirWhatsApp(paradasSel, selected); // sem contato → abre genérico
-                          setWppOpen(false);
-                        }}
-                      >
-                        <FaWhatsapp size={18} />
-                        Abrir WhatsApp
-                      </button>
-
-                      <button
-                        type="button"
-                        className={styles.whatsBtn}
-                        disabled={
-                          selCount === 0 ||
-                          (!manualNumber.trim() && !selectedContatoId)
-                        }
-                        onClick={() => {
-                          const paradasSel = (hist?.data ?? []).filter((p) =>
-                            selIds.has(p.id)
-                          );
-                          const contato = contatos.find(
-                            (c) => c.id === selectedContatoId
-                          );
-                          abrirWhatsApp(
-                            paradasSel,
-                            selected,
-                            contato,
-                            manualNumber
-                          );
-                          setWppOpen(false);
-                        }}
-                      >
-                        <FaWhatsapp size={18} /> Enviar Contato
-                      </button>
+                    {/* Tabela */}
+                    <div className={styles.tableWrap}>
+                      <table className={`${styles.table} ${styles.fixedTable}`}>
+                        <thead>
+                          <tr>
+                            <th className={styles.checkCol}>
+                              {/* selecionar todos */}
+                              <input
+                                type="checkbox"
+                                aria-label="Selecionar todos"
+                                checked={
+                                  !!hist?.data?.length &&
+                                  selIds.size > 0 &&
+                                  selIds.size === hist.data.length
+                                }
+                                ref={(el) => {
+                                  if (!el || !hist?.data?.length) return;
+                                  el.indeterminate =
+                                    selIds.size > 0 &&
+                                    selIds.size < (hist?.data?.length ?? 0);
+                                }}
+                                onChange={(e) => {
+                                  if (!hist?.data) return;
+                                  if (e.target.checked) {
+                                    selectAll(hist.data.map((p) => p.id));
+                                  } else {
+                                    clearSelection();
+                                  }
+                                }}
+                              />
+                            </th>
+                            <th className={styles.catCol}>Categoria</th>
+                            <th className={styles.motivoCol}>Motivo</th>
+                            <th className={styles.dateCol}>Início</th>
+                            <th className={styles.dateCol}>Fim</th>
+                            <th className={styles.duracaoCol}>Duração</th>
+                            <th className={styles.equipeCol}>Equipe</th>
+                            <th className={styles.obsCol}>Observação</th>
+                            <th className={styles.acoesCol}>Ações</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {hist?.data?.length ? (
+                            hist.data.map((p) => (
+                              <tr key={p.id}>
+                                <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={selIds.has(p.id)}
+                                    onChange={() => toggleSelect(p.id)}
+                                    aria-label="Selecionar parada"
+                                  />
+                                </td>
+                                <td>
+                                  <span
+                                    className={`${styles.cat} ${
+                                      p.categoria
+                                        ? (styles as any)["cat-" + p.categoria]
+                                        : ""
+                                    }`}
+                                  >
+                                    {labelCategoria(p.categoria)}
+                                  </span>
+                                </td>
+                                <td
+                                  className={styles.motivoCell}
+                                  title={p.motivo}
+                                >
+                                  {p.motivo}
+                                </td>
+                                <td>{fmtData(p.horaInicio)}</td>
+                                <td>
+                                  {p.horaFinalizacao ? (
+                                    fmtData(p.horaFinalizacao)
+                                  ) : (
+                                    <span className={styles.tagWarn}>
+                                      Em aberto
+                                    </span>
+                                  )}
+                                </td>
+                                <td>
+                                  {fmtDuracao(p.horaInicio, p.horaFinalizacao)}
+                                </td>
+                                <td>{p.equipeAtuando ?? "-"}</td>
+                                <td
+                                  className={styles.obsCell}
+                                  title={p.observacao ?? "-"}
+                                >
+                                  {p.observacao ?? "-"}
+                                </td>
+                                <td>
+                                  <button
+                                    className={styles.editBtn}
+                                    onClick={() => openEditModal(p)}
+                                    title="Editar parada"
+                                  >
+                                    <Edit size={16} />
+                                  </button>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan={9} className={styles.noData}>
+                                Nenhum registro encontrado
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
 
-            {/* ===== Modal de EDIÇÃO (sobreposta) ===== */}
-            {editOpen && editing && (
-              <div
-                className={styles.modalOverlay2}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditOpen(false);
-                }}
-                aria-hidden
-              >
-                <div
-                  className={styles.modalSm}
-                  role="dialog"
-                  aria-modal="true"
-                  aria-label="Editar parada"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <header className={styles.modalHeader}>
-                    <div className={styles.modalTitleWrap}>
-                      <Edit size={16} />
-                      <h4 className={styles.modalTitle}>Editar parada</h4>
-                    </div>
-                    <button
-                      className={styles.closeBtn}
-                      onClick={() => setEditOpen(false)}
-                      aria-label="Fechar"
-                    >
-                      <X size={16} />
-                    </button>
-                  </header>
-
-                  <form
-                    className={styles.form}
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      void saveParada();
+                {/* Modal de Envio WhatsApp (sobreposta) */}
+                {wppOpen && selected && (
+                  <div
+                    className={styles.modalOverlay2}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setWppOpen(false);
                     }}
+                    aria-hidden
                   >
-                    <div className={styles.formRow}>
-                      <label>Motivo</label>
-                      <input
-                        className={styles.input}
-                        value={editing.motivo}
-                        onChange={(e) =>
-                          setEditing({ ...editing, motivo: e.target.value })
-                        }
-                        required
-                      />
-                    </div>
-
-                    {/* Tipo & Categoria */}
-                    <div className={styles.formGrid2}>
-                      <div>
-                        <label>Tipo</label>
-                        <select
-                          className={styles.input}
-                          value={editing.tipo ?? "OPERACIONAL"}
-                          onChange={(e) => {
-                            const novoTipo = e.target.value as
-                              | "OPERACIONAL"
-                              | "NAO_OPERACIONAL";
-                            const pool =
-                              novoTipo === "OPERACIONAL"
-                                ? [...CATS_OP]
-                                : [...CATS_NOP];
-                            const catOk =
-                              editing.categoria &&
-                              pool.includes(editing.categoria as any);
-                            setEditing({
-                              ...editing,
-                              tipo: novoTipo,
-                              categoria: catOk ? editing.categoria : pool[0],
-                            });
-                          }}
-                        >
-                          <option value="OPERACIONAL">
-                            Operacional (manutenção/produção)
-                          </option>
-                          <option value="NAO_OPERACIONAL">
-                            Não operacional
-                          </option>
-                        </select>
-                      </div>
-                      <div>
-                        <label>Categoria</label>
-                        <select
-                          className={styles.input}
-                          value={
-                            editing.categoria ??
-                            (editing.tipo === "NAO_OPERACIONAL"
-                              ? CATS_NOP[0]
-                              : CATS_OP[0])
-                          }
-                          onChange={(e) =>
-                            setEditing({
-                              ...editing,
-                              categoria: e.target.value,
-                            })
-                          }
-                        >
-                          {(editing.tipo === "NAO_OPERACIONAL"
-                            ? CATS_NOP
-                            : CATS_OP
-                          ).map((c) => (
-                            <option key={c} value={c}>
-                              {labelCategoria(c)}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className={styles.formGrid2}>
-                      <div>
-                        <label>Início</label>
-                        <input
-                          type="datetime-local"
-                          className={styles.input}
-                          value={toInputDateTimeValue(editing.horaInicio)}
-                          onChange={(e) =>
-                            setEditing({
-                              ...editing,
-                              horaInicio: e.target.value,
-                            })
-                          }
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label>Fim</label>
-                        <input
-                          type="datetime-local"
-                          className={styles.input}
-                          value={toInputDateTimeValue(editing.horaFinalizacao)}
-                          onChange={(e) =>
-                            setEditing({
-                              ...editing,
-                              horaFinalizacao:
-                                e.target.value === "" ? null : e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className={styles.formGrid2}>
-                      <div>
-                        <label>Equipe atuando</label>
-                        <input
-                          className={styles.input}
-                          value={editing.equipeAtuando ?? ""}
-                          onChange={(e) =>
-                            setEditing({
-                              ...editing,
-                              equipeAtuando: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <div>
-                        <label>Observação</label>
-                        <input
-                          className={styles.input}
-                          value={editing.observacao ?? ""}
-                          onChange={(e) =>
-                            setEditing({
-                              ...editing,
-                              observacao: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className={styles.modalFooter}>
-                      <button
-                        type="button"
-                        className={styles.ghostBtn}
-                        onClick={() => setEditOpen(false)}
-                      >
-                        Cancelar
-                      </button>
-                      <button
-                        type="submit"
-                        className={styles.primaryBtn}
-                        disabled={saving}
-                      >
-                        <Save size={16} /> {saving ? "Salvando..." : "Salvar"}
-                      </button>
-                      <button
-                        type="button"
-                        className={styles.successBtn}
-                        onClick={() => finalizarParada()}
-                        disabled={saving}
-                      >
-                        <CheckCircle2 size={16} /> Finalizar
-                      </button>
-                      {editing.horaFinalizacao && (
+                    <div
+                      className={styles.modalSm}
+                      role="dialog"
+                      aria-modal="true"
+                      aria-labelledby="wppSendTitle"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <header className={styles.modalHeader}>
+                        <div className={styles.modalTitleWrap}>
+                          <MessageCircle size={16} />
+                          <h4 className={styles.modalTitle} id="wppSendTitle">
+                            <span className={styles.hideOnMobile}>
+                              {" "}
+                              Enviar Mensagens —{" "}
+                            </span>
+                            {selected.nome} ({selected.codigo})
+                          </h4>
+                        </div>
                         <button
-                          type="button"
-                          className={styles.warnBtn}
-                          onClick={() => desfazerFinalizacao()}
-                          disabled={saving}
-                          title="Remover o fim e voltar a ficar em PARADA"
+                          className={styles.closeBtn}
+                          onClick={() => setWppOpen(false)}
+                          aria-label="Fechar"
                         >
-                          <RotateCcw size={16} /> Desfazer finalização
+                          <X size={16} />
                         </button>
-                      )}
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+                      </header>
 
-        {/* ===== Modal de CONFIRMAÇÃO genérico ===== */}
+                      <div className={styles.form}>
+                        {/* Selector de contato */}
+                        <div className={styles.formRow}>
+                          <label>Selecione um contato</label>
+                          <select
+                            className={styles.input}
+                            value={selectedContatoId}
+                            onChange={(e) =>
+                              setSelectedContatoId(e.target.value)
+                            }
+                          >
+                            <option value="">— Selecione —</option>
+                            {contatos.map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {c.nome} — {prettyE164(c.celular)}
+                              </option>
+                            ))}
+                          </select>
+                          <small className={styles.dim}>
+                            Contatos carregados de <code>/api/contatos</code>.
+                          </small>
+                        </div>
+
+                        {/* Número manual */}
+                        <div className={styles.formRow}>
+                          <label>Ou informe um número (prioritário)</label>
+                          <input
+                            className={styles.input}
+                            placeholder="(11) 9XXXX-XXXX ou 11999998888"
+                            value={manualNumber}
+                            onChange={(e) => setManualNumber(e.target.value)}
+                          />
+                          <small className={styles.hint}>
+                            Convertemos automaticamente para +55 (E.164).
+                          </small>
+                        </div>
+
+                        {/* Prévia da mensagem */}
+                        <div className={styles.formRow}>
+                          <label>Prévia da mensagem</label>
+                          <div
+                            style={{
+                              whiteSpace: "pre-wrap",
+                              fontFamily:
+                                "ui-monospace, SFMono-Regular, Menlo, monospace",
+                              border: "1px dashed var(--border)",
+                              borderRadius: 8,
+                              padding: 12,
+                              background: "var(--muted)",
+                              maxHeight: 220,
+                              overflow: "auto",
+                            }}
+                          >
+                            {(() => {
+                              const all = (hist?.data ?? []).filter((p) =>
+                                selIds.has(p.id)
+                              );
+                              return all.length
+                                ? buildMensagemWhatsApp(all, selected)
+                                : "Selecione as paradas no histórico para compor a mensagem.";
+                            })()}
+                          </div>
+                        </div>
+
+                        <div className={styles.modalFooter}>
+                          <button
+                            type="button"
+                            className={styles.whatsBtn}
+                            disabled={selCount === 0}
+                            onClick={() => {
+                              const paradasSel = (hist?.data ?? []).filter(
+                                (p) => selIds.has(p.id)
+                              );
+                              abrirWhatsApp(paradasSel, selected!);
+                              setWppOpen(false);
+                            }}
+                          >
+                            <FaWhatsapp size={18} /> Abrir WhatsApp
+                          </button>
+
+                          <button
+                            type="button"
+                            className={styles.whatsBtn}
+                            disabled={
+                              selCount === 0 ||
+                              (!manualNumber.trim() && !selectedContatoId)
+                            }
+                            onClick={() => {
+                              const paradasSel = (hist?.data ?? []).filter(
+                                (p) => selIds.has(p.id)
+                              );
+                              const contato = contatos.find(
+                                (c) => c.id === selectedContatoId
+                              );
+                              abrirWhatsApp(
+                                paradasSel,
+                                selected!,
+                                contato,
+                                manualNumber
+                              );
+                              setWppOpen(false);
+                            }}
+                          >
+                            <FaWhatsapp size={18} /> Enviar Contato
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Modal de EDIÇÃO (sobreposta) */}
+                {editOpen && editing && (
+                  <div
+                    className={styles.modalOverlay2}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditOpen(false);
+                    }}
+                    aria-hidden
+                  >
+                    <div
+                      className={styles.modalSm}
+                      role="dialog"
+                      aria-modal="true"
+                      aria-label="Editar parada"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <header className={styles.modalHeader}>
+                        <div className={styles.modalTitleWrap}>
+                          <Edit size={16} />
+                          <h4 className={styles.modalTitle}>Editar parada</h4>
+                        </div>
+                        <button
+                          className={styles.closeBtn}
+                          onClick={() => setEditOpen(false)}
+                          aria-label="Fechar"
+                        >
+                          <X size={16} />
+                        </button>
+                      </header>
+
+                      <form
+                        className={styles.form}
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          void saveParada();
+                        }}
+                      >
+                        <div className={styles.formRow}>
+                          <label>Motivo</label>
+                          <input
+                            className={styles.input}
+                            value={editing.motivo}
+                            onChange={(e) =>
+                              setEditing({ ...editing, motivo: e.target.value })
+                            }
+                            required
+                          />
+                        </div>
+
+                        {/* Tipo & Categoria */}
+                        <div className={styles.formGrid2}>
+                          <div>
+                            <label>Tipo</label>
+                            <select
+                              className={styles.input}
+                              value={editing.tipo ?? "OPERACIONAL"}
+                              onChange={(e) => {
+                                const novoTipo = e.target.value as
+                                  | "OPERACIONAL"
+                                  | "NAO_OPERACIONAL";
+                                const pool =
+                                  novoTipo === "OPERACIONAL"
+                                    ? [...CATS_OP]
+                                    : [...CATS_NOP];
+                                const catOk =
+                                  editing.categoria &&
+                                  pool.includes(editing.categoria as any);
+                                setEditing({
+                                  ...editing,
+                                  tipo: novoTipo,
+                                  categoria: catOk
+                                    ? editing.categoria
+                                    : pool[0],
+                                });
+                              }}
+                            >
+                              <option value="OPERACIONAL">
+                                Operacional (manutenção/produção)
+                              </option>
+                              <option value="NAO_OPERACIONAL">
+                                Não operacional
+                              </option>
+                            </select>
+                          </div>
+                          <div>
+                            <label>Categoria</label>
+                            <select
+                              className={styles.input}
+                              value={
+                                editing.categoria ??
+                                (editing.tipo === "NAO_OPERACIONAL"
+                                  ? CATS_NOP[0]
+                                  : CATS_OP[0])
+                              }
+                              onChange={(e) =>
+                                setEditing({
+                                  ...editing,
+                                  categoria: e.target.value,
+                                })
+                              }
+                            >
+                              {(editing.tipo === "NAO_OPERACIONAL"
+                                ? CATS_NOP
+                                : CATS_OP
+                              ).map((c) => (
+                                <option key={c} value={c}>
+                                  {labelCategoria(c)}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className={styles.formGrid2}>
+                          <div>
+                            <label>Início</label>
+                            <input
+                              type="datetime-local"
+                              className={styles.input}
+                              value={toInputDateTimeValue(editing.horaInicio)}
+                              onChange={(e) =>
+                                setEditing({
+                                  ...editing,
+                                  horaInicio: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label>Fim</label>
+                            <input
+                              type="datetime-local"
+                              className={styles.input}
+                              value={toInputDateTimeValue(
+                                editing.horaFinalizacao
+                              )}
+                              onChange={(e) =>
+                                setEditing({
+                                  ...editing,
+                                  horaFinalizacao:
+                                    e.target.value === ""
+                                      ? null
+                                      : e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                        </div>
+
+                        <div className={styles.formGrid2}>
+                          <div>
+                            <label>Equipe atuando</label>
+                            <input
+                              className={styles.input}
+                              value={editing.equipeAtuando ?? ""}
+                              onChange={(e) =>
+                                setEditing({
+                                  ...editing,
+                                  equipeAtuando: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          <div>
+                            <label>Observação</label>
+                            <input
+                              className={styles.input}
+                              value={editing.observacao ?? ""}
+                              onChange={(e) =>
+                                setEditing({
+                                  ...editing,
+                                  observacao: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                        </div>
+
+                        <div className={styles.modalFooter}>
+                          <button
+                            type="button"
+                            className={styles.ghostBtn}
+                            onClick={() => setEditOpen(false)}
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            type="submit"
+                            className={styles.primaryBtn}
+                            disabled={saving}
+                          >
+                            <Save size={16} />{" "}
+                            {saving ? "Salvando..." : "Salvar"}
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.successBtn}
+                            onClick={() => finalizarParada()}
+                            disabled={saving}
+                          >
+                            <CheckCircle2 size={16} /> Finalizar
+                          </button>
+                          {editing.horaFinalizacao && (
+                            <button
+                              type="button"
+                              className={styles.warnBtn}
+                              onClick={() => desfazerFinalizacao()}
+                              disabled={saving}
+                              title="Remover o fim e voltar a ficar em PARADA"
+                            >
+                              <RotateCcw size={16} /> Desfazer finalização
+                            </button>
+                          )}
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>,
+            document.body
+          )}
+        {/* Modal de CONFIRMAÇÃO genérico */}
         {confirm.open && (
           <div
             className={styles.modalOverlay2}
@@ -1319,6 +1384,57 @@ export default function Painel() {
             </div>
           </div>
         )}
+        {/* Modal de CONFIRMAÇÃO genérico */}
+        {confirm.open &&
+          createPortal(
+            <div
+              className={styles.confirmOverlay}
+              onClick={() => setConfirm({ open: false, message: "" })}
+              aria-hidden
+            >
+              <div
+                className={styles.modalSm}
+                role="dialog"
+                aria-modal="true"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <header className={styles.modalHeader}>
+                  <div className={styles.modalTitleWrap}>
+                    <RotateCcw size={16} />
+                    <h4 className={styles.modalTitle}>Confirmar ação</h4>
+                  </div>
+                  <button
+                    className={styles.closeBtn}
+                    onClick={() => setConfirm({ open: false, message: "" })}
+                    aria-label="Fechar"
+                  >
+                    <X size={16} />
+                  </button>
+                </header>
+
+                <div className={styles.form} style={{ marginBottom: 0 }}>
+                  <p style={{ margin: 0 }}>{confirm.message}</p>
+                  <div className={styles.modalFooter}>
+                    <button
+                      type="button"
+                      className={styles.ghostBtn}
+                      onClick={() => setConfirm({ open: false, message: "" })}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.primaryBtn}
+                      onClick={() => confirm.onYes?.()}
+                    >
+                      Confirmar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )}
       </div>
     </Layout>
   );

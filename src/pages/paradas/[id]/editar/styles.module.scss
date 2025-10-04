@@ -1,198 +1,806 @@
+/* =========================
+   Animações Industriais
+   ========================= */
+@keyframes machineGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(34, 197, 94, 0.6);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes conveyorMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 30px 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes statusBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =========================
+   Topo da Página Industrial
+   ========================= */
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  color: #ebedf0;
-}
-.actionsRight {
-  display: flex;
-  gap: 0.5rem;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 2rem 2.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.95) 0%,
+    rgba(51, 65, 85, 0.9) 100%
+  );
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 2px solid rgba(34, 197, 94, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  animation: slideIn 0.8s ease-out;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #22c55e, #3b82f6, #f97316);
+    background-size: 200% 100%;
+    animation: conveyorMove 4s linear infinite;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 30px,
+      rgba(34, 197, 94, 0.02) 30px,
+      rgba(34, 197, 94, 0.02) 32px
+    );
+    pointer-events: none;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 2.25rem;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    font-family: "Inter", sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    &::before {
+      content: "✏";
+      font-size: 2rem;
+      color: #22c55e;
+      animation: machineGlow 3s ease-in-out infinite;
+    }
+  }
 }
 
+.actionsRight {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.dim {
+  color: rgba(203, 213, 225, 0.8);
+  font-weight: 600;
+  font-size: 1.25rem;
+  background: rgba(34, 197, 94, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+/* =========================
+   Formulário Industrial
+   ========================= */
 .form {
   display: grid;
-  gap: 0.75rem;
+  gap: 2rem;
+  padding: 2.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 252, 0.9) 100%
+  );
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 2px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+  position: relative;
+  overflow: hidden;
+  animation: slideIn 0.8s ease-out 0.2s both;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6, #22c55e, #f97316);
+    background-size: 200% 100%;
+    animation: conveyorMove 3s linear infinite;
+  }
 }
+
 .row {
   display: grid;
-  gap: 0.75rem;
+  gap: 2rem;
   grid-template-columns: 1fr;
-}
-@media (min-width: 900px) {
-  .row {
+
+  @media (min-width: 900px) {
     grid-template-columns: 1fr 1fr;
   }
 }
+
 .col {
   display: grid;
-  gap: 0.25rem;
+  gap: 0.75rem;
 }
+
 .colFull {
   grid-column: 1 / -1;
   display: grid;
-  gap: 0.25rem;
+  gap: 0.75rem;
 }
 
 .label {
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
   color: #374151;
   text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 30px;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6, #22c55e);
+    border-radius: 1px;
+  }
 }
-.input {
-  padding: 0.65rem 0.8rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  background: #fff;
-  font-size: 0.95rem;
-  outline: none;
-  transition: border 0.15s ease, box-shadow 0.15s ease;
-}
-.input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
-}
+
+.input,
 .textarea {
-  min-height: 140px;
+  padding: 1rem 1.25rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+
+  &::placeholder {
+    color: #9ca3af;
+    font-weight: 500;
+  }
+
+  &:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  &:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1),
+      0 8px 32px rgba(59, 130, 246, 0.2);
+    transform: translateY(-3px);
+  }
+}
+
+.textarea {
+  min-height: 150px;
   resize: vertical;
+  font-family: "Inter", sans-serif;
+  line-height: 1.6;
 }
 
 .readonly {
-  padding: 0.55rem 0.6rem;
-  background: #f8fafc;
-  border: 1px dashed #e2e8f0;
-  border-radius: 10px;
-}
-.dim {
-  color: #64748b;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.08) 0%,
+    rgba(22, 163, 74, 0.05) 100%
+  );
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(34, 197, 94, 0.2);
+  border-radius: 12px;
+  color: #374151;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1);
+  position: relative;
+
+  &::before {
+    content: "🔒";
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.2rem;
+    opacity: 0.6;
+  }
 }
 
+/* =========================
+   Botões Industriais Modernos
+   ========================= */
 .actions {
   display: flex;
-  gap: 0.6rem;
+  gap: 1.5rem;
   justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid rgba(229, 231, 235, 0.5);
+  flex-wrap: wrap;
 }
+
 .primaryBtn,
 .ghostBtn,
 .dangerBtn,
 .successBtn {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.58rem 0.85rem;
-  border-radius: 10px;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  border-radius: 12px;
   font-weight: 800;
-  letter-spacing: 0.02em;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
-  border: 1px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid;
+  text-decoration: none;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s ease;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
 }
+
 .primaryBtn {
-  border: 1px solid rgba(5, 34, 99, 0.35);
-  background: #3973f0;
-  color: #fff;
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-color: rgba(59, 130, 246, 0.6);
+  color: #ffffff;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
+
+  &:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.5);
+    border-color: rgba(59, 130, 246, 0.8);
+  }
 }
-.primaryBtn:hover {
-  background: #1341c2;
-  border: 1px solid #a3b8f0;
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.35);
-}
+
 .ghostBtn {
-  border: 1px solid #98a0ac;
-  background: #64748b;
-  text-decoration: none;
-  color: #f3f5fa;
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  border-color: rgba(100, 116, 139, 0.6);
+  color: #ffffff;
+  box-shadow: 0 8px 32px rgba(100, 116, 139, 0.4);
+
+  &:hover {
+    background: linear-gradient(135deg, #475569 0%, #334155 100%);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(100, 116, 139, 0.5);
+    border-color: rgba(100, 116, 139, 0.8);
+    text-decoration: none;
+  }
 }
-.ghostBtn:hover {
-  border: 1px solid #98a0ac;
-  background: #475569;
-  color: #f6f7fa;
-  text-decoration: none;
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.08);
-}
+
 .dangerBtn {
-  border: 1px solid #f1b4be;
-  background: #f43f5e;
-  color: #fff;
-  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.25);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #ffffff;
+  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.4);
+
+  &:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(239, 68, 68, 0.5);
+    border-color: rgba(239, 68, 68, 0.8);
+  }
 }
-.dangerBtn:hover {
-  background: #d1133d;
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(241, 69, 69, 0.35);
-}
+
 .successBtn {
-  border: 1px solid rgba(22, 163, 74, 0.35);
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: #fff;
-  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.25);
-}
-.successBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(34, 197, 94, 0.35);
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border-color: rgba(34, 197, 94, 0.6);
+  color: #ffffff;
+  box-shadow: 0 8px 32px rgba(34, 197, 94, 0.4);
+
+  &:hover {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(34, 197, 94, 0.5);
+    border-color: rgba(34, 197, 94, 0.8);
+  }
 }
 
+/* =========================
+   Estado Vazio/Loading
+   ========================= */
 .empty {
-  color: #64748b;
+  color: #6b7280;
   text-align: center;
-  padding: 1rem 0.5rem;
+  padding: 4rem 2rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-style: italic;
+  background: linear-gradient(
+    135deg,
+    rgba(107, 114, 128, 0.05) 0%,
+    rgba(107, 114, 128, 0.02) 100%
+  );
+  border-radius: 16px;
+  border: 2px dashed rgba(107, 114, 128, 0.3);
+  animation: pulse 2s infinite;
+
+  &::before {
+    content: "⚙";
+    display: block;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: machineGlow 3s ease-in-out infinite;
+  }
 }
 
-/* Modal */
+/* =========================
+   Modal Industrial Ultra Moderna
+   ========================= */
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(2, 6, 23, 0.45);
-  z-index: 999;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(12px);
+  z-index: 50000;
+  animation: slideIn 0.3s ease-out;
 }
+
 .modal {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 50001;
   display: grid;
   place-items: center;
-  padding: 1rem;
+  padding: 1.5rem;
 }
+
 .modalCard {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  box-shadow: 0 30px 80px rgba(2, 6, 23, 0.35);
-  padding: 1rem 1.1rem;
-  max-width: 520px;
-  width: min(520px, 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(248, 250, 252, 0.95) 100%
+  );
+  backdrop-filter: blur(25px);
+  border: 3px solid rgba(239, 68, 68, 0.3);
+  border-radius: 24px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  padding: 2.5rem;
+  max-width: 560px;
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: modalFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ef4444, #dc2626, #b91c1c);
+    background-size: 200% 100%;
+    animation: conveyorMove 3s linear infinite;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(239, 68, 68, 0.02) 20px,
+      rgba(239, 68, 68, 0.02) 22px
+    );
+    pointer-events: none;
+  }
 }
+
 .modalIcon {
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
   display: grid;
   place-items: center;
-  background: #fef2f2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
-  margin-bottom: 0.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.15) 0%,
+    rgba(220, 38, 38, 0.1) 100%
+  );
+  backdrop-filter: blur(10px);
+  color: #dc2626;
+  border: 3px solid rgba(239, 68, 68, 0.3);
+  margin: 0 auto 1rem;
+  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+  animation: statusBlink 2s ease-in-out infinite;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: conic-gradient(
+      rgba(239, 68, 68, 0.5),
+      transparent,
+      rgba(239, 68, 68, 0.5)
+    );
+    animation: machineGlow 2s linear infinite;
+    opacity: 0.7;
+  }
 }
+
 .modalTitle {
-  margin: 0.25rem 0;
-  font-size: 1.1rem;
+  margin: 0;
+  font-size: 1.875rem;
   font-weight: 800;
-  color: #0f172a;
+  text-align: center;
+  color: #1f2937;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: "Inter", sans-serif;
 }
+
 .modalText {
   margin: 0;
-  color: #334155;
-  line-height: 1.5;
+  color: #4b5563;
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.6;
 }
+
 .modalActions {
   display: flex;
-  gap: 0.6rem;
-  justify-content: flex-end;
-  margin-top: 0.9rem;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+/* =========================
+   Responsividade Industrial
+   ========================= */
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    padding: 1.5rem 2rem;
+
+    h1 {
+      font-size: 1.75rem;
+    }
+
+    .actionsRight {
+      justify-content: center;
+    }
+  }
+
+  .form {
+    padding: 2rem 1.5rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primaryBtn,
+  .ghostBtn,
+  .dangerBtn,
+  .successBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modalCard {
+    padding: 2rem 1.5rem;
+    margin: 1rem;
+  }
+
+  .modalTitle {
+    font-size: 1.5rem;
+  }
+
+  .modalIcon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .modalActions {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    padding: 1.25rem 1.5rem;
+
+    h1 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .form {
+    padding: 1.5rem 1.25rem;
+    gap: 1.5rem;
+  }
+
+  .row {
+    gap: 1.5rem;
+  }
+
+  .input,
+  .textarea {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .readonly {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .modalCard {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .primaryBtn,
+  .ghostBtn,
+  .dangerBtn,
+  .successBtn {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* =========================
+   Estados Especiais Industriais
+   ========================= */
+@media (prefers-reduced-motion: reduce) {
+  .topbar,
+  .form,
+  .modalCard,
+  .modalIcon,
+  .empty,
+  .input,
+  .textarea {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* =========================
+   Efeitos Hover Especiais
+   ========================= */
+.input:hover::placeholder,
+.textarea:hover::placeholder {
+  color: #6b7280;
+  transform: translateX(4px);
+  transition: all 0.2s ease;
+}
+
+.col:hover .label::after {
+  width: 50px;
+  background: linear-gradient(90deg, #22c55e, #3b82f6);
+  transition: all 0.3s ease;
+}
+
+.modalCard:hover::before {
+  animation-duration: 2s;
+}
+
+.form:hover .input:not(:hover):not(:focus) {
+  opacity: 0.8;
+  transform: scale(0.995);
+  transition: all 0.2s ease;
+}
+
+.readonly:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+/* =========================
+   Indicadores de Status Industrial
+   ========================= */
+.input:valid {
+  border-left: 4px solid #22c55e;
+}
+
+.input:invalid:not(:placeholder-shown) {
+  border-left: 4px solid #ef4444;
+}
+
+/* =========================
+   Loading States
+   ========================= */
+.primaryBtn:disabled::after,
+.ghostBtn:disabled::after,
+.dangerBtn:disabled::after,
+.successBtn:disabled::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================
+   Status Visual da Parada
+   ========================= */
+.readonly {
+  &[data-status="finalizada"] {
+    background: linear-gradient(
+      135deg,
+      rgba(34, 197, 94, 0.1) 0%,
+      rgba(22, 163, 74, 0.08) 100%
+    );
+    border-color: rgba(34, 197, 94, 0.3);
+    color: #166534;
+
+    &::before {
+      content: "✅";
+    }
+  }
+
+  &[data-status="em-andamento"] {
+    background: linear-gradient(
+      135deg,
+      rgba(245, 158, 11, 0.1) 0%,
+      rgba(217, 119, 6, 0.08) 100%
+    );
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #92400e;
+
+    &::before {
+      content: "⏳";
+    }
+  }
 }

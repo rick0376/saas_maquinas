@@ -26,13 +26,27 @@ export default function HomePublic() {
   const clientes = data?.data ?? [];
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
-    if (!term) return clientes;
-    return clientes.filter(
-      (c) =>
-        c.name.toLowerCase().includes(term) ||
-        (c.description || "").toLowerCase().includes(term)
+    const base = data?.data ?? [];
+
+    // filtra
+    const f = term
+      ? base.filter(
+          (c) =>
+            c.name.toLowerCase().includes(term) ||
+            (c.description || "").toLowerCase().includes(term)
+        )
+      : [...base];
+
+    // ordena por nome (pt-BR, sem diferenciar maiúsc./minúsc. e ignorando pontuação)
+    f.sort((a, b) =>
+      (a.name || "").localeCompare(b.name || "", "pt-BR", {
+        sensitivity: "base",
+        ignorePunctuation: true,
+      })
     );
-  }, [clientes, q]);
+
+    return f;
+  }, [data?.data, q]);
 
   return (
     <Layout requireAuth={false}>

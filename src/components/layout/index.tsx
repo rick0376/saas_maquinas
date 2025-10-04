@@ -64,6 +64,17 @@ export default function Layout({ children, requireAuth = true }: Props) {
   const isAuthed = status === "authenticated";
   const role: Role = ((session as any)?.user?.role as Role) || "USER";
 
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    const userRole = (session?.user as any)?.role as Role;
+
+    // Usuário que não é SUPERADMIN não deve carregar cookies de adminMode/tenant
+    if (userRole !== "SUPERADMIN") {
+      deleteCookie("adminMode");
+      deleteCookie("selectedTenantId");
+    }
+  }, [status, session]);
+
   // estado do menu suspenso
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -76,7 +87,16 @@ export default function Layout({ children, requireAuth = true }: Props) {
     setLogoutOpen(true);
   };
   const closeLogout = () => setLogoutOpen(false);
-  const confirmLogout = () => signOut({ callbackUrl: "/" });
+  //const confirmLogout = () => signOut({ callbackUrl: "/" });
+
+  const confirmLogout = () => {
+    // Limpa qualquer fixação de tenant
+    deleteCookie("adminMode");
+    deleteCookie("selectedTenantId");
+
+    // Sai da sessão
+    signOut({ callbackUrl: "/" });
+  };
 
   // fecha ao trocar de rota
   useEffect(() => {
@@ -212,12 +232,22 @@ export default function Layout({ children, requireAuth = true }: Props) {
 
   const brandTitle = process.env.NEXT_PUBLIC_CLIENTE_NOME || "SaaS Máquinas";
   const brandSub =
-    process.env.NEXT_PUBLIC_CLIENTE_DESC || "Gestão de Máquinas e Paradas";
+    process.env.NEXT_PUBLIC_CLIENTE_DESC || "Gestão de Máquinas e Interrupções";
 
   // ================== SELECT RÁPIDO DE CLIENTE (SUPERADMIN) ==================
   const isSuper = role === "SUPERADMIN";
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [tenantSelectValue, setTenantSelectValue] = useState<string>("ALL"); // "ALL" = agregado
+
+  const sortedTenants = useMemo(
+    () =>
+      [...tenants].sort((a, b) =>
+        (a.name || "").localeCompare(b.name || "", "pt-BR", {
+          sensitivity: "base",
+        })
+      ),
+    [tenants]
+  );
 
   // carrega lista de clientes para SUPERADMIN
   useEffect(() => {
@@ -325,7 +355,7 @@ export default function Layout({ children, requireAuth = true }: Props) {
                   title="Trocar cliente rapidamente"
                 >
                   <option value="ALL">Todos — Agregado</option>
-                  {tenants.map((t) => (
+                  {sortedTenants.map((t) => (
                     <option key={t.id} value={t.id}>
                       {t.name}
                     </option>
@@ -489,27 +519,25 @@ export default function Layout({ children, requireAuth = true }: Props) {
   const shouldHideForAuthLoading = requireAuth && status === "loading";
 
   return (
-    <div className={styles.wrapper}>
-      {Header}
-      <main className={styles.main}>
-        {shouldHideForAuthLoading ? null : children}
-      </main>
-      {Footer}
+    <>
+      <div className={styles.wrapper}>
+        {Header}
+        <main className={styles.main}>
+          {shouldHideForAuthLoading ? null : children}
+        </main>
+        {Footer}
+      </div>
 
-      {/* ===== MODAL DE CONFIRMAÇÃO DE LOGOUT ===== */}
+      {/* ===== MODAL FORA DO WRAPPER ===== */}
       {logoutOpen && (
-        <>
-          <div
-            className={styles.modalOverlay}
-            onClick={closeLogout}
-            aria-hidden="true"
-          />
-          <div
-            className={styles.modal}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="logout-title"
-          >
+        <div
+          className={styles.modalOverlay}
+          onClick={closeLogout}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="logout-title"
+        >
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalIcon}>
               <LogOut size={22} />
             </div>
@@ -528,8 +556,8 @@ export default function Layout({ children, requireAuth = true }: Props) {
               </button>
             </div>
           </div>
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 }

@@ -10,7 +10,7 @@ import {
   type PermissionAction,
   type PermissionModule,
   type Role,
-} from "../../../utils/permissions"; // caminho conforme projeto
+} from "../../../utils/permissions";
 import {
   Shield,
   Users,
@@ -20,6 +20,13 @@ import {
   CheckCircle,
   AlertTriangle,
   Building2,
+  Settings,
+  RotateCcw,
+  Check,
+  Crown,
+  UserCheck,
+  User,
+  Loader,
 } from "lucide-react";
 import styles from "./styles.module.scss";
 
@@ -39,7 +46,6 @@ interface User {
   permissoes: PermissionMatrix | null;
 }
 
-// API pode retornar Array ou {ok,data}
 type UsersRes =
   | User[]
   | { ok: true; data: User[] }
@@ -60,167 +66,192 @@ function deepEqual(a: any, b: any): boolean {
   return true;
 }
 
-/** -----------------------------------------------------------------------
- *  CATÁLOGO DE MÓDULOS → AÇÕES (apenas as que fazem sentido por tela)
- *  As keys devem bater com as que você usa em hasPermission() nas páginas.
- *  --------------------------------------------------------------------- */
+const ROLE_CONFIG = {
+  USER: { label: "Usuário", icon: User, color: "user" },
+  ADMIN: { label: "Admin", icon: UserCheck, color: "admin" },
+  SUPERADMIN: { label: "Super", icon: Crown, color: "super" },
+} as const;
+
+// Catálogo expandido com ícones
 const CATALOG: Array<{
   group: string;
+  icon: any;
   modules: Array<{
     key: PermissionModule;
     label: string;
-    actions: Array<{ key: PermissionAction; label: string }>;
+    icon: any;
+    actions: Array<{ key: PermissionAction; label: string; icon: any }>;
   }>;
 }> = [
   {
-    group: "Visão geral",
+    group: "Visão Geral",
+    icon: Settings,
     modules: [
       {
         key: "dashboard",
         label: "Dashboard",
+        icon: Settings,
         actions: [
-          { key: "view", label: "Visualizar" },
-          { key: "exportPdf", label: "Exportar PDF" },
+          { key: "view", label: "Visualizar", icon: Check },
+          { key: "exportPdf", label: "Exportar PDF", icon: Check },
         ],
       },
       {
         key: "painel_maquinas",
         label: "Painel • Máquinas",
+        icon: Settings,
         actions: [
-          { key: "view", label: "Visualizar" },
-          { key: "edit_paradas", label: "Editar" },
+          { key: "view", label: "Visualizar", icon: Check },
+          { key: "edit_paradas", label: "Editar", icon: Check },
         ],
       },
     ],
   },
   {
     group: "Operação & Paradas",
+    icon: Settings,
     modules: [
       {
         key: "operacao",
         label: "Operação",
+        icon: Settings,
         actions: [
-          { key: "view", label: "Visualizar" },
-          { key: "start_parada", label: "Iniciar" },
-          { key: "finish_parada", label: "Finalizar" },
+          { key: "view", label: "Visualizar", icon: Check },
+          { key: "start_parada", label: "Iniciar", icon: Check },
+          { key: "finish_parada", label: "Finalizar", icon: Check },
         ],
       },
       {
         key: "paradas",
         label: "Paradas",
+        icon: Settings,
         actions: [
-          { key: "view", label: "Visualizar" },
-          { key: "create", label: "Cadastrar" },
-          { key: "edit", label: "Editar" },
-          { key: "whatsapp_send", label: "WhatsApp" },
+          { key: "view", label: "Visualizar", icon: Check },
+          { key: "create", label: "Cadastrar", icon: Check },
+          { key: "edit", label: "Editar", icon: Check },
+          { key: "whatsapp_send", label: "WhatsApp", icon: Check },
         ],
       },
     ],
   },
   {
     group: "Cadastros",
+    icon: Users,
     modules: [
       {
         key: "maquinas",
         label: "Máquinas",
+        icon: Settings,
         actions: [
-          { key: "view", label: "Visualizar" },
-          { key: "add", label: "Adicionar" },
-          { key: "edit", label: "Editar" },
-          { key: "delete", label: "Excluir" },
+          { key: "view", label: "Visualizar", icon: Check },
+          { key: "add", label: "Adicionar", icon: Check },
+          { key: "edit", label: "Editar", icon: Check },
+          { key: "delete", label: "Excluir", icon: X },
         ],
       },
       {
         key: "secoes",
         label: "Seções",
+        icon: Building2,
         actions: [
-          { key: "view", label: "Visualizar" },
-          { key: "add", label: "Adicionar" },
-          { key: "edit", label: "Editar" },
-          { key: "delete", label: "Excluir" },
+          { key: "view", label: "Visualizar", icon: Check },
+          { key: "add", label: "Adicionar", icon: Check },
+          { key: "edit", label: "Editar", icon: Check },
+          { key: "delete", label: "Excluir", icon: X },
         ],
       },
       {
         key: "contatos",
         label: "Contatos",
+        icon: Users,
         actions: [
-          { key: "view", label: "Visualizar" },
-          { key: "add", label: "Adicionar" },
-          { key: "edit", label: "Editar" },
-          { key: "delete", label: "Excluir" },
+          { key: "view", label: "Visualizar", icon: Check },
+          { key: "add", label: "Adicionar", icon: Check },
+          { key: "edit", label: "Editar", icon: Check },
+          { key: "delete", label: "Excluir", icon: X },
         ],
       },
       {
         key: "usuarios",
         label: "Usuários",
+        icon: Users,
         actions: [
-          { key: "view", label: "Visualizar" },
-          { key: "add", label: "Adicionar" },
-          { key: "edit", label: "Editar" },
-          { key: "delete", label: "Excluir" },
+          { key: "view", label: "Visualizar", icon: Check },
+          { key: "add", label: "Adicionar", icon: Check },
+          { key: "edit", label: "Editar", icon: Check },
+          { key: "delete", label: "Excluir", icon: X },
         ],
       },
     ],
   },
   {
     group: "Relatórios",
+    icon: Settings,
     modules: [
       {
         key: "relatorios_paradas",
         label: "Relatórios • Paradas",
+        icon: Settings,
         actions: [
-          { key: "view", label: "Visualizar" },
-          { key: "exportPdf", label: "Exportar PDF" },
+          { key: "view", label: "Visualizar", icon: Check },
+          { key: "exportPdf", label: "Exportar PDF", icon: Check },
         ],
       },
     ],
   },
   {
     group: "Integrações",
+    icon: Settings,
     modules: [
       {
         key: "integracoes_whatsapp",
         label: "WhatsApp",
+        icon: Settings,
         actions: [
-          { key: "view", label: "Visualizar" },
-          { key: "open_whatsapp", label: "WhatsApp" },
-          { key: "copy_link", label: "Copiar link" },
+          { key: "view", label: "Visualizar", icon: Check },
+          { key: "open_whatsapp", label: "WhatsApp", icon: Check },
+          { key: "copy_link", label: "Copiar link", icon: Check },
         ],
       },
     ],
   },
   {
     group: "Administração",
+    icon: Building2,
     modules: [
       {
         key: "clientes",
         label: "Clientes (Fábricas)",
+        icon: Building2,
         actions: [
-          { key: "view", label: "Visualizar" },
-          { key: "add", label: "Cadastrar" },
-          { key: "edit", label: "Editar" },
-          { key: "delete", label: "Excluir" },
+          { key: "view", label: "Visualizar", icon: Check },
+          { key: "add", label: "Cadastrar", icon: Check },
+          { key: "edit", label: "Editar", icon: Check },
+          { key: "delete", label: "Excluir", icon: X },
         ],
       },
     ],
   },
   {
     group: "Configurações",
+    icon: Settings,
     modules: [
       {
         key: "settings",
         label: "Configurações",
+        icon: Settings,
         actions: [
-          { key: "view", label: "Visualizar" },
-          { key: "save", label: "Salvar" },
+          { key: "view", label: "Visualizar", icon: Check },
+          { key: "save", label: "Salvar", icon: Save },
         ],
       },
       {
         key: "permissoes",
         label: "Permissões (esta tela)",
+        icon: Shield,
         actions: [
-          { key: "view", label: "Visualizar" },
-          { key: "save", label: "Salvar" },
+          { key: "view", label: "Visualizar", icon: Check },
+          { key: "save", label: "Salvar", icon: Save },
         ],
       },
     ],
@@ -230,7 +261,7 @@ const CATALOG: Array<{
 export default function PermissoesAdmin() {
   const { isSuperAdmin } = usePermissions();
 
-  // Sessão (para validar permissão VIEW/SAVE deste módulo)
+  // Sessão
   const { data: sess } = useSWR<any>("/api/auth/session", fetcher, {
     revalidateOnFocus: false,
   });
@@ -271,8 +302,13 @@ export default function PermissoesAdmin() {
     return tenantId ? allUsers.filter((u) => u.tenantId === tenantId) : [];
   }, [allUsers, isSuperAdmin, tenantId]);
 
-  // Busca
+  // Estados
   const [term, setTerm] = useState("");
+  const [selected, setSelected] = useState<User | null>(null);
+  const [matrix, setMatrix] = useState<PermissionMatrix>({});
+  const [saving, setSaving] = useState(false);
+
+  // Filtro de busca
   const filtered = useMemo(() => {
     const s = term.trim().toLowerCase();
     if (!s) return scopedUsers;
@@ -283,10 +319,6 @@ export default function PermissoesAdmin() {
     );
   }, [scopedUsers, term]);
 
-  // Seleção + matriz
-  const [selected, setSelected] = useState<User | null>(null);
-  const [matrix, setMatrix] = useState<PermissionMatrix>({});
-
   const baseMatrix = useMemo(
     () => ensurePermissions(selected?.permissoes || {}),
     [selected?.permissoes]
@@ -296,7 +328,7 @@ export default function PermissoesAdmin() {
     [matrix, baseMatrix]
   );
 
-  // Se o usuário selecionado sair do escopo (mudou tenant/lista), limpa seleção
+  // Limpa seleção se usuário sair do escopo
   useEffect(() => {
     if (!selected) return;
     if (!scopedUsers.find((u) => u.id === selected.id)) {
@@ -315,7 +347,7 @@ export default function PermissoesAdmin() {
     setMatrix(ensurePermissions(u.permissoes || {}));
   }
 
-  // Helpers de leitura/escrita
+  // Helpers de permissões
   const isChecked = (m: PermissionModule, a: PermissionAction) =>
     !!matrix?.[m]?.[a];
 
@@ -348,30 +380,47 @@ export default function PermissoesAdmin() {
     });
   };
 
+  function resetToOriginal() {
+    if (!selected) return;
+    setMatrix(ensurePermissions(selected.permissoes || {}));
+  }
+
   // Toast
   const [toast, setToast] = useState<
     { type: "ok"; msg: string } | { type: "err"; msg: string } | null
   >(null);
 
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
   async function save() {
     if (!selected || !dirty || !canSave) return;
+    setSaving(true);
+
     try {
       const res = await fetch(`/api/admin/users/${selected.id}/permissions`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ permissoes: matrix }),
       });
+
       if (!res.ok) throw new Error();
+
       setToast({
         type: "ok",
         msg: `Permissões salvas para ${selected.name ?? selected.email}.`,
       });
     } catch {
       setToast({ type: "err", msg: "Falha ao salvar. Tente novamente." });
+    } finally {
+      setSaving(false);
     }
   }
 
-  // Bloqueio por falta de VIEW (sem violar regras de hooks)
   const blockView = !!sess && !canView;
 
   return (
@@ -380,96 +429,130 @@ export default function PermissoesAdmin() {
       requireClientAdmin={!isSuperAdmin}
     >
       <Layout requireAuth={true}>
-        <div className={styles.page}>
-          <div className={styles.topbar}>
-            <div className={styles.left}>
-              <div className={styles.iconWrap}>
-                <Shield size={20} />
-              </div>
-              <div className={styles.titleWrap}>
-                <h1>Permissões</h1>
-                <span className={styles.subtitle}>
-                  Defina por módulo e por ação
-                </span>
-                {!canSave && (
-                  <span
-                    className={styles.readonlyBadge}
-                    title="Somente leitura"
-                  >
-                    Somente leitura
-                  </span>
-                )}
-              </div>
+        <div className={styles.container}>
+          {/* Header */}
+          <header className={styles.topbar}>
+            <div className={styles.titleWrap}>
+              <h1 className={styles.pageTitle}>
+                <Shield size={24} />
+                Gerenciamento Avançado de Permissões
+              </h1>
+              <span className={styles.subtitle}>
+                Configure permissões detalhadas por módulo e ação para cada
+                usuário
+              </span>
+              {!canSave && (
+                <div className={styles.readonlyBadge}>
+                  <AlertTriangle size={14} />
+                  Modo Somente Leitura
+                </div>
+              )}
             </div>
-            <div className={styles.right}>
-              <div className={styles.tenantBadge} title="Cliente/Fábrica atual">
-                <Building2 size={14} />
+
+            <div className={styles.headerBadges}>
+              <div className={styles.tenantBadge}>
+                <Building2 size={16} />
                 <span>{tenantName}</span>
               </div>
+              <div className={styles.roleBadge}>
+                {(() => {
+                  const config = ROLE_CONFIG[myRole];
+                  const Icon = config.icon;
+                  return (
+                    <>
+                      <Icon size={16} />
+                      {config.label}
+                    </>
+                  );
+                })()}
+              </div>
             </div>
-          </div>
+          </header>
 
           {blockView && (
-            <div className={`${styles.block} card`} role="alert">
-              <strong>Sem acesso à tela de Permissões.</strong>
-              <div className={styles.dimSmall}>
-                Solicite a permissão de visualização.
+            <div className={styles.blockCard}>
+              <div className={styles.blockIcon}>
+                <Shield size={48} />
               </div>
+              <h2 className={styles.blockTitle}>Acesso Restrito</h2>
+              <p className={styles.blockText}>
+                Você não possui permissão para acessar o gerenciamento avançado
+                de permissões. Entre em contato com um administrador.
+              </p>
             </div>
           )}
 
           {!blockView && (
             <>
+              {/* Toast */}
               {toast && (
                 <div
                   className={`${styles.toast} ${
-                    toast.type === "ok" ? styles.toastOk : styles.toastErr
+                    toast.type === "ok"
+                      ? styles.toastSuccess
+                      : styles.toastError
                   }`}
-                  role="status"
                 >
                   {toast.type === "ok" ? (
-                    <CheckCircle size={16} />
+                    <CheckCircle size={20} />
                   ) : (
-                    <AlertTriangle size={16} />
+                    <AlertTriangle size={20} />
                   )}
                   <span>{toast.msg}</span>
                   <button
                     className={styles.toastClose}
                     onClick={() => setToast(null)}
                   >
-                    <X size={14} />
+                    <X size={16} />
                   </button>
                 </div>
               )}
 
-              <div className={styles.grid}>
-                {/* Coluna: usuários */}
-                <section className={`card ${styles.usersCard}`}>
-                  <header className={styles.cardHead}>
+              <div className={styles.mainGrid}>
+                {/* Coluna de Usuários */}
+                <section className={styles.usersPanel}>
+                  <div className={styles.panelHeader}>
                     <h3>
-                      <Users size={16} /> Usuários
+                      <Users size={20} />
+                      Usuários ({filtered.length})
                     </h3>
                     <div className={styles.searchBox}>
-                      <Search size={16} />
+                      <Search size={18} />
                       <input
                         className={styles.searchInput}
-                        placeholder="Buscar por nome ou email…"
+                        placeholder="Buscar usuário…"
                         value={term}
                         onChange={(e) => setTerm(e.target.value)}
                       />
+                      {term && (
+                        <button
+                          className={styles.clearSearch}
+                          onClick={() => setTerm("")}
+                        >
+                          <X size={16} />
+                        </button>
+                      )}
                     </div>
-                  </header>
+                  </div>
 
                   <div className={styles.usersList}>
                     {isLoading ? (
-                      <div className={styles.centerMuted}>Carregando…</div>
+                      <div className={styles.loading}>
+                        <Loader size={24} className={styles.spinner} />
+                        Carregando usuários…
+                      </div>
                     ) : filtered.length === 0 ? (
-                      <div className={styles.centerMuted}>
-                        Nenhum usuário encontrado
+                      <div className={styles.empty}>
+                        {term
+                          ? "Nenhum usuário encontrado"
+                          : "Nenhum usuário disponível"}
                       </div>
                     ) : (
                       filtered.map((u) => {
+                        const config = ROLE_CONFIG[u.role];
+                        const Icon = config.icon;
                         const active = selected?.id === u.id;
+
                         return (
                           <button
                             key={u.id}
@@ -477,31 +560,24 @@ export default function PermissoesAdmin() {
                               active ? styles.active : ""
                             }`}
                             onClick={() => selectUser(u)}
-                            title={u.email}
                           >
-                            <div className={styles.avatar}>
-                              <Users size={16} />
+                            <div className={styles.userAvatar}>
+                              {(u.name || u.email).charAt(0).toUpperCase()}
                             </div>
-                            <div className={styles.userText}>
-                              <strong>{u.name || "Sem nome"}</strong>
-                              <span className={styles.dim}>{u.email}</span>
-                              {u.tenant?.name && (
-                                <span className={styles.dimSmall}>
-                                  {u.tenant.name}
-                                </span>
-                              )}
+                            <div className={styles.userInfo}>
+                              <div className={styles.userName}>
+                                {u.name || "Usuário"}
+                              </div>
+                              <div className={styles.userEmail}>{u.email}</div>
                             </div>
-                            <span
-                              className={`${styles.role} ${
-                                u.role === "SUPERADMIN"
-                                  ? styles.tagSuper
-                                  : u.role === "ADMIN"
-                                  ? styles.tagAdmin
-                                  : styles.tagUser
+                            <div
+                              className={`${styles.userRole} ${
+                                styles[`role${u.role}`]
                               }`}
                             >
-                              {u.role}
-                            </span>
+                              <Icon size={14} />
+                              <span>{config.label}</span>
+                            </div>
                           </button>
                         );
                       })
@@ -509,110 +585,194 @@ export default function PermissoesAdmin() {
                   </div>
                 </section>
 
-                {/* Coluna: cartões por módulo */}
-                <section className={`card ${styles.modulesPanel}`}>
+                {/* Painel de Permissões */}
+                <section className={styles.permissionsPanel}>
                   {!selected ? (
-                    <div className={styles.centerMutedBig}>
-                      <Shield size={28} />
-                      <div>Selecione um usuário para editar as permissões</div>
+                    <div className={styles.emptyState}>
+                      <Shield size={64} />
+                      <h3>Selecione um Usuário</h3>
+                      <p>
+                        Escolha um usuário da lista ao lado para configurar suas
+                        permissões
+                      </p>
                     </div>
                   ) : (
                     <>
-                      <header className={styles.selHead}>
-                        <div className={styles.selUserWrap}>
-                          <div className={styles.avatarLg}>
-                            <Users size={18} />
+                      {/* Header do usuário selecionado */}
+                      <div className={styles.selectedUserHeader}>
+                        <div className={styles.selectedUserInfo}>
+                          <div className={styles.selectedUserAvatar}>
+                            {(selected.name || selected.email)
+                              .charAt(0)
+                              .toUpperCase()}
                           </div>
                           <div>
-                            <h3>{selected.name || selected.email}</h3>
-                            <div className={styles.dim}>{selected.email}</div>
+                            <h3>{selected.name || "Usuário"}</h3>
+                            <div className={styles.selectedUserEmail}>
+                              {selected.email}
+                            </div>
+                            <div
+                              className={`${styles.selectedUserRole} ${
+                                styles[`role${selected.role}`]
+                              }`}
+                            >
+                              {(() => {
+                                const config = ROLE_CONFIG[selected.role];
+                                const Icon = config.icon;
+                                return (
+                                  <>
+                                    <Icon size={16} />
+                                    {config.label}
+                                  </>
+                                );
+                              })()}
+                            </div>
                           </div>
                         </div>
 
-                        <button
-                          className={styles.saveBtn}
-                          disabled={!dirty || !canSave}
-                          onClick={save}
-                          title={
-                            !canSave
-                              ? "Sem permissão para salvar"
-                              : dirty
-                              ? "Salvar alterações"
-                              : "Nada para salvar"
-                          }
-                        >
-                          <Save size={16} />
-                          Salvar
-                        </button>
-                      </header>
+                        <div className={styles.actionButtons}>
+                          {dirty && (
+                            <button
+                              className={styles.resetBtn}
+                              onClick={resetToOriginal}
+                              title="Descartar alterações"
+                            >
+                              <RotateCcw size={16} />
+                              Descartar
+                            </button>
+                          )}
 
-                      {/* Grupos + cartões de módulos */}
-                      <div className={styles.groupsWrap}>
-                        {CATALOG.map((g) => (
-                          <div key={g.group} className={styles.groupBlock}>
-                            <div className={styles.groupTitle}>{g.group}</div>
-                            <div className={styles.moduleGrid}>
-                              {g.modules.map((m) => {
-                                const actionKeys = m.actions.map((a) => a.key);
-                                const allOn = moduleAllChecked(
-                                  m.key,
-                                  actionKeys
-                                );
-                                return (
-                                  <div
-                                    key={m.key}
-                                    className={styles.moduleCard}
-                                    data-mod={m.key} // <- para temas coloridos por módulo
-                                  >
-                                    <div className={styles.moduleHead}>
-                                      <div className={styles.moduleTitle}>
-                                        {m.label}
-                                      </div>
-                                      <label className={styles.toggleAll}>
-                                        <input
-                                          type="checkbox"
-                                          checked={allOn}
-                                          onChange={(e) =>
-                                            toggleModuleAll(
-                                              m.key,
-                                              actionKeys,
-                                              e.target.checked
-                                            )
-                                          }
-                                          disabled={!canSave}
-                                        />
-                                        <span>Selecionar tudo</span>
-                                      </label>
-                                    </div>
+                          <button
+                            className={styles.saveBtn}
+                            disabled={!dirty || !canSave || saving}
+                            onClick={save}
+                            title={
+                              !canSave
+                                ? "Sem permissão para salvar"
+                                : !dirty
+                                ? "Nenhuma alteração para salvar"
+                                : "Salvar alterações"
+                            }
+                          >
+                            {saving ? (
+                              <>
+                                <Loader size={16} className={styles.spinner} />
+                                Salvando…
+                              </>
+                            ) : (
+                              <>
+                                <Save size={16} />
+                                Salvar Alterações
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
 
-                                    <div className={styles.chips}>
-                                      {m.actions.map((a) => (
+                      {/* Grupos de Permissões */}
+                      <div className={styles.permissionsContent}>
+                        {CATALOG.map((group) => {
+                          const GroupIcon = group.icon;
+
+                          return (
+                            <div
+                              key={group.group}
+                              className={styles.permissionGroup}
+                            >
+                              <div className={styles.groupHeader}>
+                                <GroupIcon size={20} />
+                                <h4>{group.group}</h4>
+                              </div>
+
+                              <div className={styles.modulesGrid}>
+                                {group.modules.map((module) => {
+                                  const ModuleIcon = module.icon;
+                                  const actionKeys = module.actions.map(
+                                    (a) => a.key
+                                  );
+                                  const allChecked = moduleAllChecked(
+                                    module.key,
+                                    actionKeys
+                                  );
+
+                                  return (
+                                    <div
+                                      key={module.key}
+                                      className={styles.moduleCard}
+                                      data-module={module.key}
+                                    >
+                                      <div className={styles.moduleHeader}>
+                                        <div className={styles.moduleTitle}>
+                                          <ModuleIcon size={18} />
+                                          <span>{module.label}</span>
+                                        </div>
+
                                         <label
-                                          key={a.key}
-                                          className={styles.chip}
+                                          className={styles.selectAllToggle}
                                         >
                                           <input
                                             type="checkbox"
-                                            checked={isChecked(m.key, a.key)}
+                                            checked={allChecked}
                                             onChange={(e) =>
-                                              setAction(
-                                                m.key,
-                                                a.key,
+                                              toggleModuleAll(
+                                                module.key,
+                                                actionKeys,
                                                 e.target.checked
                                               )
                                             }
                                             disabled={!canSave}
                                           />
-                                          <span>{a.label}</span>
+                                          <span
+                                            className={styles.toggleSlider}
+                                          ></span>
+                                          <span className={styles.toggleLabel}>
+                                            Tudo
+                                          </span>
                                         </label>
-                                      ))}
+                                      </div>
+
+                                      <div className={styles.actionsGrid}>
+                                        {module.actions.map((action) => {
+                                          const ActionIcon = action.icon;
+                                          const checked = isChecked(
+                                            module.key,
+                                            action.key
+                                          );
+
+                                          return (
+                                            <label
+                                              key={action.key}
+                                              className={`${
+                                                styles.actionChip
+                                              } ${
+                                                checked ? styles.checked : ""
+                                              }`}
+                                            >
+                                              <input
+                                                type="checkbox"
+                                                checked={checked}
+                                                onChange={(e) =>
+                                                  setAction(
+                                                    module.key,
+                                                    action.key,
+                                                    e.target.checked
+                                                  )
+                                                }
+                                                disabled={!canSave}
+                                              />
+                                              <ActionIcon size={14} />
+                                              <span>{action.label}</span>
+                                            </label>
+                                          );
+                                        })}
+                                      </div>
                                     </div>
-                                  </div>
-                                );
-                              })}
+                                  );
+                                })}
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </>
                   )}

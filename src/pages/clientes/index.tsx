@@ -73,12 +73,21 @@ export default function ClientesPage() {
   const role: Role = (data?.role as Role) ?? "USER";
   const isSuper = role === "SUPERADMIN";
 
-  // busca local
+  // busca local + ordenação alfabética (pt-BR, case-insensitive)
   const [q, setQ] = useState("");
   const list = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    if (!s) return clientes;
-    return clientes.filter((c) => c.name.toLowerCase().includes(s));
+    const term = q.trim().toLowerCase();
+    const filtered = term
+      ? (clientes ?? []).filter((c) => c.name.toLowerCase().includes(term))
+      : [...(clientes ?? [])];
+
+    // ordena por nome A→Z
+    return filtered.sort((a, b) =>
+      a.name.localeCompare(b.name, "pt-BR", {
+        sensitivity: "base",
+        ignorePunctuation: true,
+      })
+    );
   }, [clientes, q]);
 
   // criação/edição
@@ -147,8 +156,9 @@ export default function ClientesPage() {
   }
 
   // Se não for superadmin, mostra só o cliente atual de forma read-only
-  const onlyCurrentForNonSuper =
-    !isSuper && atual ? clientes.filter((c) => c.id === atual) : list;
+  const onlyCurrentForNonSuper = isSuper
+    ? list
+    : clientes.filter((c) => c.id === atual);
 
   return (
     <Layout requireAuth={true}>

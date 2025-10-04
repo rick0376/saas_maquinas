@@ -55,10 +55,18 @@ export default function TenantsAdminPage() {
   const tenants = data?.data ?? [];
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
-    if (!term) return tenants;
-    return tenants.filter((t) => t.name.toLowerCase().includes(term));
-  }, [tenants, q]);
+    const base = term
+      ? (tenants ?? []).filter((t) =>
+          (t.name || "").toLowerCase().includes(term)
+        )
+      : tenants ?? [];
 
+    return [...base].sort((a, b) =>
+      (a.name || "").localeCompare(b.name || "", "pt-BR", {
+        sensitivity: "base",
+      })
+    );
+  }, [tenants, q]);
   return (
     <Layout requireAuth={true}>
       <div className={styles.container}>

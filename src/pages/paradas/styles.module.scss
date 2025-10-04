@@ -1,260 +1,1102 @@
+/* =========================
+   Animações Industriais
+   ========================= */
+@keyframes machineGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(34, 197, 94, 0.6);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes conveyorMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 30px 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes statusBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* =========================
+   Cabeçalho da Página
+   ========================= */
 .head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  color: #ebedf0;
-}
-.headActions {
-  display: flex;
-  gap: 0.5rem;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 2rem 2.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.95) 0%,
+    rgba(51, 65, 85, 0.9) 100%
+  );
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 2px solid rgba(34, 197, 94, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  animation: slideIn 0.8s ease-out;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #22c55e, #3b82f6, #f97316);
+    background-size: 200% 100%;
+    animation: conveyorMove 4s linear infinite;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 2.25rem;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    font-family: "Inter", sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    &::before {
+      content: "⚙";
+      font-size: 2rem;
+      color: #22c55e;
+      animation: machineGlow 3s ease-in-out infinite;
+    }
+  }
 }
 
-/* Botões */
+.headActions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.dim {
+  color: #ced4dd;
+  font-weight: 600;
+  font-size: 1.25rem;
+  background: rgba(34, 197, 94, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+/* =========================
+   Botões Industriais Modernos
+   ========================= */
 .primaryBtn,
 .ghostBtn,
 .ghostWBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  padding: 0.6rem 0.9rem;
-  border-radius: 10px;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
   font-weight: 800;
-  letter-spacing: 0.02em;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s ease;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
 }
+
 .primaryBtn {
-  border: 1px solid rgba(5, 34, 99, 0.35);
-  background: #3973f0;
-  color: #fff;
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-color: rgba(59, 130, 246, 0.6);
+  color: #ffffff;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
+
+  &:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.5);
+    border-color: rgba(59, 130, 246, 0.8);
+  }
 }
-.primaryBtn:hover {
-  background: #1341c2;
-  border: 1px solid #a3b8f0;
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.35);
-}
+
 .ghostBtn {
-  border: 1px solid #946005;
-  background: #f59e0b;
-  color: #0f172a;
-}
-.ghostBtn:hover {
-  background: #d97706;
-  border: 1px solid #e0b76f;
-  color: #f2f3f5;
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.08);
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-color: rgba(245, 158, 11, 0.6);
+  color: #ffffff;
+  box-shadow: 0 8px 32px rgba(245, 158, 11, 0.4);
+
+  &:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(245, 158, 11, 0.5);
+    border-color: rgba(245, 158, 11, 0.8);
+  }
 }
 
 .ghostWBtn {
-  border: 1px solid #034d1e;
-  background: #25d366;
-  color: #0f172a;
-}
-.ghostWBtn:hover {
-  background: #128c7e;
-  border: 1px solid #9de7df;
-  color: #f2f3f5;
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.08);
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  border-color: rgba(37, 211, 102, 0.6);
+  color: #ffffff;
+  box-shadow: 0 8px 32px rgba(37, 211, 102, 0.4);
+
+  &:hover {
+    background: linear-gradient(135deg, #128c7e 0%, #0d7377 100%);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(37, 211, 102, 0.5);
+    border-color: rgba(37, 211, 102, 0.8);
+  }
 }
 
-/* Filtros */
+/* =========================
+   Filtros Industriais
+   ========================= */
 .filters {
-  padding: 0.8rem;
+  padding: 2rem;
+  background: linear-gradient(
+    135deg,
+    rgba(248, 250, 252, 0.95) 0%,
+    rgba(241, 245, 249, 0.9) 100%
+  );
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  border: 2px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+  animation: slideIn 0.8s ease-out 0.2s both;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6, #22c55e, #f97316);
+    background-size: 200% 100%;
+    animation: conveyorMove 3s linear infinite;
+  }
 }
+
 .filterRow {
   display: grid;
-  gap: 0.5rem;
+  gap: 1rem;
   grid-template-columns: auto 1fr 1fr auto 1fr 1fr auto 1fr auto;
   align-items: end;
 }
+
 .label {
-  color: #0f172a;
-  font-weight: 700;
-}
-.input,
-.filterRow select {
-  padding: 0.5rem 0.6rem;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
-  background: #fff;
-  color: #0f172a;
-  outline: none;
-}
-.input:focus,
-.filterRow select:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+  color: #1f2937;
+  font-weight: 800;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 30px;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6, #22c55e);
+    border-radius: 1px;
+  }
 }
 
-/* Tabela */
+.input,
+.filterRow select {
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  color: #1f2937;
+  font-weight: 600;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  &:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1),
+      0 4px 16px rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px);
+  }
+
+  &:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* =========================
+   Tabela Industrial Ultra Moderna
+   ========================= */
 .tableWrap {
   overflow-x: auto;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: none !important;
+  background: #ffffff !important;
+  animation: slideIn 0.8s ease-out 0.4s both;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border-radius: 4px;
+
+    &:hover {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    }
+  }
 }
+
 .table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 800px;
+
+  th,
+  td {
+    text-align: left;
+    padding: 1.25rem 1rem;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+    vertical-align: middle;
+    position: relative;
+  }
+
+  th {
+    background: linear-gradient(
+      135deg,
+      rgba(59, 130, 246, 0.1) 0%,
+      rgba(34, 197, 94, 0.1) 100%
+    );
+    color: #374151;
+    font-weight: 800;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  /* Remove blur e fundo transparente da primeira coluna */
+  tbody td:first-child {
+    backdrop-filter: none !important;
+    filter: none !important;
+    background: #ffffff !important;
+  }
+
+  tbody tr,
+  tbody tr > * {
+    backdrop-filter: none !important;
+    filter: none !important;
+    background: transparent !important;
+  }
+
+  td {
+    font-weight: 600;
+    color: #374151;
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #3b82f6;
+      cursor: pointer;
+    }
+  }
 }
-.table th,
-.table td {
-  text-align: left;
-  padding: 0.65rem 0.55rem;
-  border-bottom: 1px solid #e2e8f0;
-  vertical-align: middle;
+
+.table th:first-child {
+  backdrop-filter: none !important;
+  background: #ffffff !important;
 }
-.table th {
-  color: #334155;
-  font-weight: 800;
-  font-size: 0.85rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
+
 .empty {
   text-align: center;
-  color: #475569;
-  padding: 0.8rem;
+  color: #6b7280;
+  font-weight: 600;
+  padding: 3rem 2rem;
+  font-style: italic;
+  background: linear-gradient(
+    135deg,
+    rgba(107, 114, 128, 0.05) 0%,
+    rgba(107, 114, 128, 0.02) 100%
+  );
+  font-size: 1.1rem;
 }
+
 .trunc {
-  max-width: 360px;
+  max-width: 300px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .num {
   text-align: right;
-}
-.dim {
-  color: #b6bdc7;
-}
-.rowSel {
-  background: #f8fafc;
+  font-family: "JetBrains Mono", monospace;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 800;
 }
 
-/* Modal */
+.rowSel {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.15) 0%,
+    rgba(34, 197, 94, 0.1) 100%
+  ) !important;
+  box-shadow: inset 3px 0 0 #3b82f6 !important;
+  /*transform: scale(1.002) !important;*/
+
+  &:hover {
+    background: linear-gradient(
+      135deg,
+      rgba(59, 130, 246, 0.2) 0%,
+      rgba(34, 197, 94, 0.15) 100%
+    ) !important;
+  }
+}
+
+/* =========================
+   Modal Industrial WhatsApp
+   ========================= */
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(2, 6, 23, 0.45);
-  z-index: 999;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(12px);
+  z-index: 50000; /* MENOR que o alert */
+  animation: slideIn 0.3s ease-out;
 }
+
 .modal {
   position: fixed;
   inset: 0;
-  z-index: 1000;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
+  z-index: 50001;
+
+  /* ⬇️ Top-center perfeito + rolagem quando a modal ficar grande */
+  display: flex;
+  align-items: flex-start; /* topo */
+  justify-content: center; /* centro horizontal */
+  padding: clamp(12px, 4vh, 48px) 16px; /* respiro no topo em telas pequenas */
+  overflow: auto; /* rolar a página por trás da card */
 }
+
 .modalCard {
-  width: min(1100px, 100%);
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  background: #fff;
-  padding: 1rem;
+  width: min(1200px, 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(248, 250, 252, 0.95) 100%
+  );
+  backdrop-filter: blur(25px);
+  border: 2px solid rgba(37, 211, 102, 0.3);
+  border-radius: 24px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  padding: 2.5rem;
+  position: relative;
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ⬇️ Se o conteúdo for MUITO alto, rola dentro do card e mantém topo */
+  max-height: calc(100dvh - clamp(24px, 8vh, 96px));
+  overflow: auto;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #25d366, #128c7e, #0d7377);
+    background-size: 200% 100%;
+    animation: conveyorMove 3s linear infinite;
+  }
 }
+
 .modalTitle {
-  margin: 0 0 0.25rem;
-  font-size: 1.1rem;
+  margin: 0 0 1rem;
+  font-size: 2rem;
   font-weight: 800;
-  color: #0f172a;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  &::before {
+    content: "📟";
+    font-size: 1.75rem;
+    animation: pulse 2s infinite;
+  }
 }
+
 .modalText {
-  margin: 0 0 0.6rem;
-  color: #334155;
+  margin: 0 0 2rem;
+  color: #4b5563;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.6;
 }
 
 .modalGrid {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: 420px 1fr;
+  gap: 2rem;
+  grid-template-columns: 450px 1fr;
 }
 
-/* Coluna contatos */
+/* ====== Modal de Alerta (top-center também) ====== */
+.alertModalContainer {
+  position: fixed;
+  inset: 0;
+  z-index: 60000;
+
+  /* ⬇️ Top-center + rolagem do viewport quando necessário */
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(12px, 6vh, 48px) 16px;
+  overflow: auto;
+  min-height: 100dvh;
+}
+
+.alertModal {
+  width: min(450px, 100%);
+  max-height: calc(100dvh - clamp(24px, 12vh, 96px));
+  overflow: auto;
+}
+
+/* =========================
+   Coluna de Contatos
+   ========================= */
 .contactColumn {
   display: grid;
-  gap: 0.6rem;
+  gap: 1.5rem;
 }
+
 .contactHead {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(
+    135deg,
+    rgba(37, 211, 102, 0.1) 0%,
+    rgba(18, 140, 126, 0.05) 100%
+  );
+  border-radius: 12px;
+  border: 1px solid rgba(37, 211, 102, 0.2);
+
+  strong {
+    font-size: 1.1rem;
+    color: #1f2937;
+  }
 }
+
 .dimSmall {
-  color: #64748b;
-  font-size: 0.85rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: rgba(107, 114, 128, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
 }
+
 .contactScroll {
-  max-height: 48vh;
+  max-height: 50vh;
   overflow: auto;
   display: grid;
-  gap: 0.45rem;
-  padding-right: 0.2rem;
+  gap: 0.75rem;
+  padding-right: 0.5rem;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(37, 211, 102, 0.1);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    border-radius: 3px;
+  }
 }
+
 .contactItem {
   display: grid;
-  grid-template-columns: 20px 1fr auto;
-  gap: 0.5rem;
+  grid-template-columns: 24px 1fr auto;
+  gap: 1rem;
   align-items: center;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 0.45rem 0.6rem;
-  background: #fff;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #25d366;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.2);
+  }
+
+  input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #25d366;
+  }
 }
+
 .cName {
-  color: #0f172a;
-  font-weight: 700;
+  color: #1f2937;
+  font-weight: 800;
+  font-size: 1rem;
 }
+
 .cPhone {
-  color: #475569;
+  color: #6b7280;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.875rem;
+  background: rgba(107, 114, 128, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
 }
 
 .customBox {
   display: grid;
-  gap: 0.35rem;
-}
-.textarea {
-  width: 100%;
-  padding: 0.7rem 0.8rem;
-  border: 1px solid #e2e8f0;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.05) 0%,
+    rgba(37, 211, 102, 0.05) 100%
+  );
   border-radius: 12px;
-  background: #fff;
-  color: #0f172a;
-  resize: vertical;
-}
-.textarea:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
-}
-.hint {
-  color: #64748b;
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
-/* Coluna mensagem */
+.hint {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-style: italic;
+  background: rgba(107, 114, 128, 0.1);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border-left: 3px solid #3b82f6;
+}
+
+/* =========================
+   Coluna de Mensagem
+   ========================= */
 .messageColumn {
   display: grid;
-  gap: 0.35rem;
+  gap: 1rem;
 }
 
-/* Ações da modal */
+.textarea {
+  width: 100%;
+  padding: 1.25rem 1.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  color: #1f2937;
+  font-weight: 600;
+  resize: vertical;
+  min-height: 400px;
+  font-family: "Inter", sans-serif;
+  line-height: 1.6;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.1),
+      0 8px 32px rgba(37, 211, 102, 0.2);
+    transform: translateY(-2px);
+  }
+
+  &:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+}
+
+/* =========================
+   Ações do Modal
+   ========================= */
 .modalActions {
   display: flex;
   justify-content: flex-end;
-  gap: 0.6rem;
-  margin-top: 0.8rem;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgba(229, 231, 235, 0.5);
 }
 
-/* Responsivo */
+/* =========================
+   Responsividade Industrial
+   ========================= */
+@media (max-width: 1200px) {
+  .modalGrid {
+    grid-template-columns: 400px 1fr;
+  }
+}
+
 @media (max-width: 980px) {
   .filterRow {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
+
   .modalGrid {
     grid-template-columns: 1fr;
   }
+
+  .head {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .headActions {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .head {
+    padding: 1.5rem 2rem;
+
+    h2 {
+      font-size: 1.75rem;
+    }
+  }
+
+  .filters {
+    padding: 1.5rem;
+  }
+
+  .modalCard {
+    padding: 2rem 1.5rem;
+  }
+
+  .modalTitle {
+    font-size: 1.5rem;
+  }
+
+  .primaryBtn,
+  .ghostBtn,
+  .ghostWBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .table th,
+  .table td {
+    padding: 1rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .head {
+    padding: 1.25rem 1.5rem;
+
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .filters {
+    padding: 1.25rem;
+  }
+
+  .modalCard {
+    padding: 1.5rem 1rem;
+  }
+
+  .modal {
+    padding: 1rem;
+  }
+
+  .table {
+    min-width: 600px;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* =========================
+   Estados Especiais
+   ========================= */
+@media (prefers-reduced-motion: reduce) {
+  .head,
+  .filters,
+  .tableWrap,
+  .modalCard,
+  .contactItem,
+  .textarea {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* =========================
+   Efeitos Hover Especiais
+   ========================= */
+.table tbody tr:hover .num {
+  background: rgba(34, 197, 94, 0.2);
+  color: #166534;
+  transform: scale(1.05);
+}
+
+.contactItem:hover .cPhone {
+  background: rgba(37, 211, 102, 0.2);
+  color: #166534;
+}
+
+.modalCard:hover::before {
+  animation-duration: 2s;
+}
+/* =========================
+   Modal de Alerta Industrial
+   ========================= */
+.alertModal {
+  width: min(450px, 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(248, 250, 252, 0.95) 100%
+  );
+  backdrop-filter: blur(25px);
+  border: 3px solid rgba(59, 130, 246, 0.3);
+  border-radius: 24px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: center;
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  /* Z-INDEX MAIOR APLICADO AO CONTAINER PARENT */
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #22c55e, #f97316);
+    background-size: 200% 100%;
+    animation: conveyorMove 3s linear infinite;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(59, 130, 246, 0.02) 20px,
+      rgba(59, 130, 246, 0.02) 22px
+    );
+    pointer-events: none;
+  }
+}
+
+/* Container do modal de alerta com z-index maior */
+.alertModalContainer {
+  position: fixed;
+  inset: 0;
+  z-index: 60000; /* MUITO MAIOR que o WhatsApp (50001) */
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.alertOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(15px);
+  z-index: 59999; /* MAIOR que o WhatsApp */
+  animation: slideIn 0.3s ease-out;
+}
+
+.alertIcon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 2.5rem;
+  font-weight: bold;
+  animation: pulse 2s infinite;
+  position: relative;
+  border: 3px solid;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    animation: machineGlow 2s linear infinite;
+    opacity: 0.7;
+  }
+}
+
+.alertError {
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.15) 0%,
+    rgba(220, 38, 38, 0.1) 100%
+  );
+  color: #dc2626;
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+
+  &::before {
+    background: conic-gradient(
+      rgba(239, 68, 68, 0.5),
+      transparent,
+      rgba(239, 68, 68, 0.5)
+    );
+  }
+
+  ~ .alertModal::before {
+    background: linear-gradient(90deg, #ef4444, #dc2626, #b91c1c);
+  }
+}
+
+.alertWarning {
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.15) 0%,
+    rgba(217, 119, 6, 0.1) 100%
+  );
+  color: #d97706;
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 8px 32px rgba(245, 158, 11, 0.3);
+
+  &::before {
+    background: conic-gradient(
+      rgba(245, 158, 11, 0.5),
+      transparent,
+      rgba(245, 158, 11, 0.5)
+    );
+  }
+
+  ~ .alertModal::before {
+    background: linear-gradient(90deg, #f59e0b, #d97706, #b45309);
+  }
+}
+
+.alertInfo {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.15) 0%,
+    rgba(37, 99, 235, 0.1) 100%
+  );
+  color: #2563eb;
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+
+  &::before {
+    background: conic-gradient(
+      rgba(59, 130, 246, 0.5),
+      transparent,
+      rgba(59, 130, 246, 0.5)
+    );
+  }
+}
+
+.alertTitle {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #1f2937;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: "Inter", sans-serif;
+}
+
+.alertText {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.alertActions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+/* Responsividade do Modal de Alerta */
+@media (max-width: 768px) {
+  .alertModal {
+    padding: 2rem 1.5rem;
+    margin: 1rem;
+  }
+
+  .alertIcon {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+  }
+
+  .alertTitle {
+    font-size: 1.5rem;
+  }
+
+  .alertText {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .alertModal {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .alertIcon {
+    width: 60px;
+    height: 60px;
+    font-size: 1.75rem;
+  }
+
+  .alertTitle {
+    font-size: 1.25rem;
+  }
+
+  .alertText {
+    font-size: 0.9rem;
+  }
+}
+
+/* Efeitos especiais */
+.alertModal:hover::before {
+  animation-duration: 2s;
+}
+
+.alertIcon:hover {
+  transform: scale(1.05);
+  animation-duration: 1s;
 }

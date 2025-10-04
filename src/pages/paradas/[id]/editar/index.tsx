@@ -79,6 +79,13 @@ export default function EditParadaPage() {
   const [showDel, setShowDel] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Modal de confirmação genérica (para “desfazer” com conflito)
+  const [confirm, setConfirm] = useState<{
+    open: boolean;
+    message: string;
+    onYes?: () => void;
+  }>({ open: false, message: "" });
+
   // Carrega form quando a parada chegar
   useEffect(() => {
     if (!p) return;
@@ -136,16 +143,93 @@ export default function EditParadaPage() {
     }
   }
 
+  async function postDesfazer(paradaId: string, ignoreOpen = false) {
+    const q = ignoreOpen ? "?ignoreOpen=1" : "";
+    const urls = [
+      `/api/paradas/${encodeURIComponent(paradaId)}/desfazer${q}`,
+      `/api/paradas/${encodeURIComponent(paradaId)}/reabrir${q}`,
+    ];
+
+    let lastMessage = "Falha ao desfazer a finalização.";
+    for (const url of urls) {
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: paradaId, ignoreOpen }),
+        });
+
+        let data: any = null;
+        try {
+          data = await res.json();
+        } catch {}
+
+        if (res.ok) return { ok: true as const };
+
+        if (res.status === 409) {
+          return {
+            ok: false as const,
+            conflict: true as const,
+            code: data?.code || "CONFLICT",
+            message:
+              data?.message ||
+              data?.error ||
+              "Já existe outra parada em aberto para esta máquina.",
+          };
+        }
+
+        if (res.status === 404) {
+          lastMessage =
+            data?.message || data?.error || "Parada não encontrada.";
+          continue; // tenta a outra rota
+        }
+
+        lastMessage =
+          data?.message ||
+          data?.error ||
+          `Falha ao desfazer (HTTP ${res.status}).`;
+      } catch (e) {
+        lastMessage = (e as Error).message || lastMessage;
+      }
+    }
+
+    return {
+      ok: false as const,
+      conflict: false as const,
+      message: lastMessage,
+    };
+  }
+
   async function desfazerFinalizacao() {
     if (!id) return;
-    const r = await fetch(`/api/paradas/${id}/desfazer`, { method: "POST" });
-    if (r.ok) {
-      mutate(`/api/paradas/${id}`);
-      mutate("/paradas");
-      router.push("/paradas");
-    } else {
-      alert("Falha ao desfazer finalização.");
+    const result = await postDesfazer(id, false);
+    if (!result.ok && result.conflict) {
+      setConfirm({
+        open: true,
+        message:
+          result.message ||
+          "Já existe uma parada em aberto para esta máquina. Deseja reabrir assim mesmo?",
+        onYes: async () => {
+          setConfirm({ open: false, message: "" });
+          const retry = await postDesfazer(id, true);
+          if (!retry.ok) {
+            alert(retry.message || "Falha ao desfazer a finalização.");
+            return;
+          }
+          mutate(`/api/paradas/${id}`);
+          mutate("/paradas");
+          router.push("/paradas");
+        },
+      });
+      return;
     }
+    if (!result.ok) {
+      alert(result.message || "Falha ao desfazer finalização.");
+      return;
+    }
+    mutate(`/api/paradas/${id}`);
+    mutate("/paradas");
+    router.push("/paradas");
   }
 
   async function excluir() {
@@ -342,6 +426,47 @@ export default function EditParadaPage() {
                   disabled={deleting}
                 >
                   <Check size={14} /> {deleting ? "Excluindo…" : "Excluir"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Modal de confirmação genérica (desfazer com outra parada aberta) */}
+      {confirm.open && (
+        <>
+          <div
+            className={styles.modalOverlay}
+            onClick={() => setConfirm({ open: false, message: "" })}
+          />
+          <div
+            className={styles.modal}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="confirmTitle"
+          >
+            <div className={styles.modalCard}>
+              <h4 id="confirmTitle" className={styles.modalTitle}>
+                Confirmar ação
+              </h4>
+              <p className={styles.modalText} style={{ marginTop: 8 }}>
+                {confirm.message}
+              </p>
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  className={styles.ghostBtn}
+                  onClick={() => setConfirm({ open: false, message: "" })}
+                >
+                  <X size={14} /> Cancelar
+                </button>
+                <button
+                  type="button"
+                  className={styles.primaryBtn}
+                  onClick={() => confirm.onYes?.()}
+                >
+                  Confirmar
                 </button>
               </div>
             </div>
