@@ -412,16 +412,16 @@ export default function WhatsappPage() {
 
         {/* ===== Modal 1 — Escolher tipo de envio ===== */}
         {showChoiceModal && (
-          <>
-            <div
-              className={styles.modalOverlay}
-              onClick={() => setShowChoiceModal(false)}
-            />
+          <div
+            className={styles.modalOverlay}
+            onClick={() => setShowChoiceModal(false)}
+          >
             <div
               className={styles.modal}
               role="dialog"
               aria-modal="true"
               aria-label="Escolher tipo de envio"
+              onClick={(e) => e.stopPropagation()}
             >
               <div className={styles.modalHeader}>
                 <h3>Como deseja enviar?</h3>
@@ -460,18 +460,18 @@ export default function WhatsappPage() {
                 </button>
               </div>
             </div>
-          </>
+          </div>
         )}
 
         {/* ===== Modal 2 — Aviso (quando faltou contato/número ou mensagem) ===== */}
         {showHintModal && (
-          <>
-            <div className={styles.modalOverlay} onClick={closeHintAndFocus} />
+          <div className={styles.modalOverlay} onClick={closeHintAndFocus}>
             <div
               className={styles.modal}
               role="dialog"
               aria-modal="true"
               aria-label="Ação necessária"
+              onClick={(e) => e.stopPropagation()}
             >
               <div className={styles.modalHeader}>
                 <h3>Ação necessária</h3>
@@ -497,7 +497,7 @@ export default function WhatsappPage() {
                 </button>
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
     </Layout>
