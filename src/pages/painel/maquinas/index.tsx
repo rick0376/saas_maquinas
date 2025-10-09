@@ -299,7 +299,7 @@ export default function Painel() {
   const grupos = useMemo(() => {
     const g: Record<string, Maquina[]> = {};
     for (const m of maquinas) {
-      const key = m.secao?.nome || "Sem seção";
+      const key = m.secao?.nome || "Sem Seção";
       (g[key] ||= []).push(m);
     }
     for (const key in g)
@@ -717,7 +717,9 @@ export default function Painel() {
                     {secao}
                   </option>
                 ))}
-                <option value="Sem seção">Sem Seção</option>
+                <option value="Sem Seção">Sem Seção</option>
+                <option value="Geral">Todas as Máquinas</option>{" "}
+                {/* Adicionando a opção de todas as máquinas */}
               </select>
             </div>
           </form>
@@ -725,31 +727,71 @@ export default function Painel() {
 
         {/* Seções / Máquinas — INALTERADO */}
         <div className={styles.sectionsGrid}>
-          {Object.entries(grupos)
-            .filter(
-              ([secao]) => selecaoSecao === "TODAS" || secao === selecaoSecao
-            )
-            .map(([secao, maquinasDoGrupo]) => (
-              <section key={secao} className={`card ${styles.emptyCard}`}>
-                <header className={styles.secaoHeader}>
-                  <h3>{secao}</h3>
-                  <span className={styles.count}>
-                    {maquinasDoGrupo.length} máquinas: (
-                    {maquinasDoGrupo.filter((m) => m.status === "ATIVA").length}{" "}
-                    funcionando,{" "}
-                    {maquinasDoGrupo.filter((m) => m.status !== "ATIVA").length}{" "}
-                    paradas)
-                  </span>
-                </header>
-
-                <ul className={styles.maquinasList}>
-                  {maquinasDoGrupo.map((m) => (
+          {selecaoSecao === "Geral" ? (
+            // Exibe todas as máquinas sem separação
+            <section className={`card ${styles.emptyCard}`}>
+              <header className={styles.secaoHeader}>
+                <h3>Todas as Máquinas</h3>
+                <span className={styles.count}>{maquinas.length} máquinas</span>
+              </header>
+              <ul className={styles.maquinasList}>
+                {maquinas.map((m) => (
+                  <MachineItem key={m.id} m={m} />
+                ))}
+              </ul>
+            </section>
+          ) : selecaoSecao === "Sem Seção" ? (
+            // Exibe as máquinas sem seção
+            <section className={`card ${styles.emptyCard}`}>
+              <header className={styles.secaoHeader}>
+                <h3>Sem Seção</h3>
+                <span className={styles.count}>
+                  {maquinas.filter((m) => m.secao === null).length} máquinas
+                </span>
+              </header>
+              <ul className={styles.maquinasList}>
+                {maquinas
+                  .filter((m) => m.secao === null)
+                  .map((m) => (
                     <MachineItem key={m.id} m={m} />
                   ))}
-                </ul>
-              </section>
-            ))}
+              </ul>
+            </section>
+          ) : (
+            // Exibe as seções como já estava
+            Object.entries(grupos)
+              .filter(
+                ([secao]) => selecaoSecao === "TODAS" || secao === selecaoSecao
+              )
+              .map(([secao, maquinasDoGrupo]) => (
+                <section key={secao} className={`card ${styles.emptyCard}`}>
+                  <header className={styles.secaoHeader}>
+                    <h3>{secao}</h3>
+                    <span className={styles.count}>
+                      {maquinasDoGrupo.length} máquinas: (
+                      {
+                        maquinasDoGrupo.filter((m) => m.status === "ATIVA")
+                          .length
+                      }{" "}
+                      funcionando,{" "}
+                      {
+                        maquinasDoGrupo.filter((m) => m.status !== "ATIVA")
+                          .length
+                      }{" "}
+                      paradas)
+                    </span>
+                  </header>
+
+                  <ul className={styles.maquinasList}>
+                    {maquinasDoGrupo.map((m) => (
+                      <MachineItem key={m.id} m={m} />
+                    ))}
+                  </ul>
+                </section>
+              ))
+          )}
         </div>
+
         {/* ===== TODOS OS MODAIS ORIGINAIS PERMANECEM IGUAIS ===== */}
         {/* Modal HISTÓRICO */}
         {selected &&
